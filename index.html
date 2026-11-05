@@ -1,0 +1,2887 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LSPD CIVILIAN DOSSIER // DANIEL BROWN</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Orbitron & Rajdhani & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#080d16',
+                            panel: '#0f172a',
+                            panelBorder: '#1e293b',
+                            cyan: '#00f3ff',
+                            amber: '#ffb700',
+                            crimson: '#ff2a5f',
+                            neonGreen: '#00ff88',
+                            blueDark: '#0b1329'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #060911;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Scanline Overlay Effect */
+        .scanline-bg {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 0, 0, 0.3) 50%,
+                rgba(0, 0, 0, 0.3)
+            );
+            background-size: 100% 4px;
+        }
+
+        /* Neon Glow Utility Classes */
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.25), inset 0 0 10px rgba(0, 243, 255, 0.1);
+        }
+        .glow-amber {
+            box-shadow: 0 0 15px rgba(255, 183, 0, 0.25), inset 0 0 10px rgba(255, 183, 0, 0.1);
+        }
+        .glow-crimson {
+            box-shadow: 0 0 15px rgba(255, 42, 95, 0.3), inset 0 0 10px rgba(255, 42, 95, 0.15);
+        }
+        .text-glow-cyan {
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.7);
+        }
+        .text-glow-amber {
+            text-shadow: 0 0 8px rgba(255, 183, 0, 0.7);
+        }
+
+        /* Glassmorphism Panels */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+        }
+        .glass-panel-amber {
+            background: rgba(20, 16, 5, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 183, 0, 0.2);
+        }
+        .glass-panel-crimson {
+            background: rgba(24, 8, 15, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 42, 95, 0.25);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #080d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00f3ff44;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f3ffaa;
+        }
+
+        /* Pulse Animations for Traumas */
+        @keyframes panicPulse {
+            0%, 100% {
+                border-color: rgba(255, 42, 95, 0.3);
+                box-shadow: 0 0 10px rgba(255, 42, 95, 0.2);
+            }
+            50% {
+                border-color: rgba(255, 42, 95, 0.9);
+                box-shadow: 0 0 25px rgba(255, 42, 95, 0.7);
+            }
+        }
+        .panic-mode {
+            animation: panicPulse 1s infinite;
+        }
+
+        /* Corner Tech Decorators */
+        .corner-border {
+            position: relative;
+        }
+        .corner-border::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px;
+            width: 10px; height: 10px;
+            border-top: 2px solid #00f3ff;
+            border-left: 2px solid #00f3ff;
+        }
+        .corner-border::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; right: -1px;
+            width: 10px; height: 10px;
+            border-bottom: 2px solid #00f3ff;
+            border-right: 2px solid #00f3ff;
+        }
+        /* Admin mode: management controls are hidden from visitors */
+        body:not(.admin-mode) .admin-only { display: none !important; }
+        body.admin-mode [data-edit] { outline: 1px dashed rgba(0, 243, 255, 0.35); outline-offset: 2px; border-radius: 2px; cursor: pointer; }
+        body.admin-mode [data-edit]:hover { outline: 1px solid #00f3ff; background: rgba(0, 243, 255, 0.08); }
+        #adminBanner { display: none; }
+        /* Ordering controls (admin mode only) */
+        .sort-ctrl { position: absolute; top: 4px; right: 4px; z-index: 30; display: flex; gap: 2px; padding: 2px; border-radius: 4px; background: rgba(8, 13, 22, 0.92); border: 1px solid rgba(0, 243, 255, 0.45); }
+        .sort-ctrl button { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #00f3ff; border-radius: 3px; font-family: Orbitron, sans-serif; }
+        .sort-ctrl button:hover { background: rgba(0, 243, 255, 0.2); color: #fff; }
+        .sort-ctrl .sort-pos { width: auto; padding: 0 4px; color: #ffb700; }
+        .sort-ctrl[data-style="section"] { top: -20px; right: auto; left: 0; }
+        .sort-ctrl[data-style="section"]::before { content: 'BÖLÜM'; font: 600 8px Orbitron, sans-serif; color: #94a3b8; align-self: center; padding: 0 4px; }
+        .sort-ctrl[data-style="compact"] { top: 50%; right: auto; left: -20px; transform: translateY(-50%); flex-direction: column; padding: 1px; }
+        .sort-ctrl[data-style="compact"] button { width: 14px; height: 12px; font-size: 8px; }
+        .tab-move { display: flex; align-items: center; padding: 0 3px; color: #64748b; font-size: 10px; }
+        .tab-move:hover { color: #00f3ff; }
+        .item-order { display: inline-flex; align-items: center; gap: 2px; margin-right: auto; }
+        .item-order button { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; color: #94a3b8; border: 1px solid #334155; border-radius: 3px; background: rgba(15, 23, 42, 0.8); }
+        .item-order button:hover { color: #00f3ff; border-color: #00f3ff; }
+        .item-order .sort-pos { width: auto; padding: 0 5px; color: #ffb700; font-family: Orbitron, sans-serif; }
+        body.admin-mode [data-sort-group="summary"] > [data-sort-id],
+        body.admin-mode [data-sort-group="skills"] > [data-sort-id],
+        body.admin-mode [data-sort-group="contact-sections"] > [data-sort-id],
+        body.admin-mode [data-sort-group="attitude-sections"] > [data-sort-id] { margin-top: 26px; }
+        body.admin-mode #adminBanner { display: flex; }
+
+        /* ===== Trauma reaction test button ===== */
+        .trauma-btn { position: relative; display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px 7px 7px; font-family: Orbitron, sans-serif; border-radius: 8px; border: 1px solid rgba(255, 42, 95, 0.7); background: linear-gradient(135deg, rgba(255, 42, 95, 0.28), rgba(120, 0, 30, 0.35)); box-shadow: 0 0 14px rgba(255, 42, 95, 0.35), inset 0 0 12px rgba(255, 42, 95, 0.15); overflow: hidden; transition: transform .2s, box-shadow .2s; animation: traumaBtnGlow 2.2s ease-in-out infinite; }
+        .trauma-btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%); transform: translateX(-120%); animation: traumaBtnShine 3.5s ease-in-out infinite; pointer-events: none; }
+        .trauma-btn:hover { transform: translateY(-1px); box-shadow: 0 0 26px rgba(255, 42, 95, 0.7), inset 0 0 14px rgba(255, 42, 95, 0.25); }
+        .trauma-btn:active { transform: scale(0.97); }
+        .trauma-btn-icon { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: #ff2a5f; color: #fff; font-size: 14px; box-shadow: 0 0 12px rgba(255, 42, 95, 0.8); animation: traumaHeartbeat 1.2s ease-in-out infinite; }
+        @keyframes traumaBtnGlow { 0%,100% { border-color: rgba(255,42,95,0.55); } 50% { border-color: rgba(255,42,95,1); } }
+        @keyframes traumaBtnShine { 0%, 60% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+        @keyframes traumaHeartbeat { 0%, 40%, 100% { transform: scale(1); } 20% { transform: scale(1.15); } 30% { transform: scale(0.95); } }
+
+        /* ===== Trauma flashback overlay ===== */
+        #traumaOverlay { position: fixed; inset: 0; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 24px; overflow: hidden; background: radial-gradient(ellipse at center, rgba(150, 0, 25, 0.92), rgba(30, 0, 6, 0.97)); opacity: 0; transition: opacity .5s, background 1.2s; font-family: Rajdhani, sans-serif; }
+        #traumaOverlay.open { display: flex; }
+        #traumaOverlay.visible { opacity: 1; }
+        #traumaOverlay.shake { animation: traumaShake .6s ease-in-out 1; }
+        #traumaOverlay.heavy-shake { animation: traumaShake 1.2s ease-in-out 2; }
+        #traumaOverlay.blackout { background: #000; }
+        #traumaOverlay.blackout .tr-card-wrap { opacity: 0; transform: scale(0.9); }
+        #traumaOverlay.calm { background: radial-gradient(ellipse at center, rgba(0, 60, 80, 0.92), rgba(2, 8, 16, 0.98)); }
+        #traumaOverlay::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.25) 0 2px, transparent 2px 4px); mix-blend-mode: multiply; }
+        #traumaOverlay::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 160px rgba(0,0,0,0.9); }
+        #traumaOverlay .tr-flash { position: absolute; inset: 0; background: #ff2a5f; opacity: 0; pointer-events: none; }
+        #traumaOverlay .tr-flash.go { animation: traumaFlash .8s ease-out; }
+        #traumaOverlay .tr-card-wrap { position: relative; z-index: 2; width: min(460px, 92vw); transition: opacity .8s, transform .8s; }
+        #traumaOverlay .tr-card-wrap .glass-panel-crimson { background: rgba(40, 0, 10, 0.85); border: 1px solid #ff2a5f; animation: panicPulse 1.6s ease-in-out infinite; }
+        #traumaOverlay .tr-dialog { position: relative; z-index: 2; width: min(760px, 94vw); max-height: 52vh; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 18px 20px; border: 1px solid rgba(255, 42, 95, 0.45); border-radius: 10px; background: rgba(10, 0, 3, 0.7); backdrop-filter: blur(4px); transition: border-color 1s; }
+        #traumaOverlay.calm .tr-dialog { border-color: rgba(0, 243, 255, 0.5); }
+        .tr-line { opacity: 0; transform: translateY(8px); animation: traumaLineIn .4s forwards; font-size: 16px; line-height: 1.55; color: #f3d6dc; }
+        .tr-line.system { font-family: Orbitron, sans-serif; font-size: 12px; letter-spacing: .12em; color: #ffb700; text-shadow: 0 0 8px rgba(255, 183, 0, .6); }
+        .tr-line.system.alert { color: #ff5c7f; text-shadow: 0 0 10px rgba(255, 42, 95, .9); animation: traumaLineIn .4s forwards, traumaBlink 1s step-end infinite .4s; }
+        .tr-line.system.final { color: #00f3ff; text-shadow: 0 0 10px rgba(0, 243, 255, .8); font-size: 13px; text-align: center; }
+        .tr-line.narration { font-style: italic; color: #c9a3ab; font-size: 15px; }
+        .tr-line .tr-speaker { display: block; font-family: Orbitron, sans-serif; font-size: 11px; letter-spacing: .15em; color: #ff2a5f; margin-bottom: 2px; }
+        .tr-line.voice .tr-speaker { color: #94a3b8; }
+        .tr-line.voice .tr-text { color: #e2e8f0; font-style: italic; }
+        .tr-line .tr-text { color: #fff; }
+        .tr-caret { display: inline-block; width: 7px; height: 1em; background: currentColor; vertical-align: -2px; margin-left: 2px; animation: traumaBlink .8s step-end infinite; }
+        #traumaOverlay .tr-skip { position: absolute; top: 16px; right: 16px; z-index: 3; font-family: Orbitron, sans-serif; font-size: 11px; letter-spacing: .1em; color: #fecdd3; padding: 6px 12px; border: 1px solid rgba(255,255,255,.3); border-radius: 6px; background: rgba(0,0,0,.4); }
+        #traumaOverlay .tr-skip:hover { background: rgba(255,255,255,.12); color: #fff; }
+        #traumaOverlay .tr-hint { position: absolute; bottom: 14px; z-index: 3; font-family: Orbitron, sans-serif; font-size: 10px; letter-spacing: .15em; color: rgba(255,255,255,.4); }
+        @keyframes traumaShake { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-2px, 1px); } 50% { transform: translate(2px, -1px); } 75% { transform: translate(-1px, 1px); } }
+        @keyframes traumaFlash { 0% { opacity: .85; } 100% { opacity: 0; } }
+        @keyframes traumaLineIn { to { opacity: 1; transform: translateY(0); } }
+        @keyframes traumaBlink { 50% { opacity: 0.25; } }
+        @media (prefers-reduced-motion: reduce) { #traumaOverlay.shake, #traumaOverlay.heavy-shake { animation: none; } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-cyber-cyan selection:text-black">
+    <!-- Grid Canvas Background -->
+    <canvas id="gridCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
+    
+    <!-- Top Tablet Status Bar -->
+    <header class="relative z-20 bg-cyber-bg/95 border-b border-cyber-cyan/30 px-4 py-2 text-xs font-rajdhani tracking-widest flex flex-wrap justify-between items-center shadow-lg">
+        <div class="flex items-center gap-3">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyber-neonGreen animate-pulse"></span>
+            <span class="text-cyber-cyan font-bold font-orbitron">LS-PD DOSSIER DB v4.09</span>
+            <span class="hidden sm:inline text-gray-500">|</span>
+            <span class="hidden sm:inline text-gray-400">TERM_ID: <span class="text-gray-200">LSPD-DB-20000306</span></span>
+        </div>
+
+        <!-- Quick System Clock & Battery -->
+        <div class="flex items-center gap-5">
+            <div class="flex items-center gap-1.5 text-cyber-amber">
+                <i class="fa-solid fa-wifi text-xs"></i>
+                <span>LS-NET SECURE</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-gray-300">
+                <i class="fa-solid fa-battery-three-quarters text-cyber-cyan"></i>
+                <span>94%</span>
+            </div>
+            <button onclick="toggleAdmin()" class="admin-toggle-btn px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-gray-300 text-[11px] font-orbitron rounded flex items-center gap-1.5">
+                <i class="fa-solid fa-lock"></i> <span>Yönetici</span>
+            </button>
+            <div id="systemClock" class="font-orbitron font-bold text-cyber-cyan text-sm">
+                00:00:00
+            </div>
+        </div>
+    </header>
+
+    <!-- Test-address warning: shown on any address other than the live site -->
+    <div id="previewBanner" class="hidden relative z-30 bg-cyber-crimson/15 border-b border-cyber-crimson/60 px-4 py-2 text-[11px] font-orbitron text-red-200 flex-wrap items-center justify-center gap-3 text-center">
+        <span><i class="fa-solid fa-triangle-exclamation text-cyber-crimson mr-1"></i> BU BİR TEST ADRESİ — burada yapılan değişiklikler kalıcı değildir ve canlı siteye geçmez.</span>
+        <a id="goLiveBtn" href="https://spontaneous-cheesecake-9f6abe.netlify.app/" class="px-3 py-1 bg-cyber-crimson text-white font-bold rounded hover:bg-red-500 inline-flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Canlı Siteye Git
+        </a>
+    </div>
+
+    <!-- Admin mode notice -->
+    <div id="adminBanner" class="relative z-20 bg-cyber-neonGreen/10 border-b border-cyber-neonGreen/40 px-4 py-1.5 text-[11px] font-orbitron text-cyber-neonGreen items-center justify-center gap-2 text-center">
+        <i class="fa-solid fa-user-shield"></i>
+        <span>YÖNETİCİ MODU AÇIK — Kesik çizgili yazılara tıklayarak düzenleyebilirsiniz.</span>
+    </div>
+
+    <!-- Main Tablet Container -->
+    <main class="relative z-10 container mx-auto px-3 sm:px-6 py-4 flex-grow flex flex-col gap-5 max-w-7xl">
+        
+        <!-- Character Dossier Banner Header -->
+        <section class="glass-panel rounded-xl p-4 sm:p-6 corner-border relative overflow-hidden transition-all duration-300">
+            <!-- Background Watermark Decor -->
+            <div class="absolute right-0 top-0 translate-x-12 -translate-y-8 opacity-5 pointer-events-none select-none font-orbitron text-9xl font-extrabold text-cyber-cyan">
+                <span data-edit="c23e41d07b0">DANIEL</span>
+            </div>
+
+            <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6 relative z-10">
+                <!-- Avatar Frame -->
+                <div class="relative group">
+                    <div class="w-28 h-36 sm:w-36 sm:h-44 rounded-lg bg-slate-900 border-2 border-cyber-cyan/60 flex items-center justify-center overflow-hidden glow-cyan relative">
+                        <!-- Placeholder Hologram Image -->
+                        <img id="avatarImg" src="/api/avatar"
+                             alt="Daniel Brown Avatar" 
+                             class="w-full h-full object-cover grayscale contrast-125 brightness-90 group-hover:scale-105 transition-all duration-500"
+                             onerror="avatarFallback(this)">
+                        <!-- Holographic Overlay Scanline -->
+                        <div class="absolute inset-0 scanline-bg opacity-40"></div>
+                        <div class="absolute bottom-1 right-1 bg-black/80 px-1.5 py-0.5 rounded text-[9px] font-orbitron text-cyber-cyan border border-cyber-cyan/30">
+                            <span data-edit="c597bc3e960">VERIFIED</span>
+                        </div>
+                    </div>
+                    <!-- Avatar controls (admin only actions) -->
+                    <input type="file" id="avatarFileInput" accept="image/jpeg,image/png,image/webp,image/gif" class="hidden" onchange="uploadAvatar(this)">
+                    <div class="mt-2 flex flex-col items-center gap-1">
+                        <button id="avatarChangeBtn" onclick="changeAvatar()" class="admin-only w-full px-2 py-1 bg-cyber-cyan/10 hover:bg-cyber-cyan/25 border border-cyber-cyan/50 text-cyber-cyan text-[10px] font-orbitron rounded flex items-center justify-center gap-1.5 transition-all">
+                            <i class="fa-solid fa-camera"></i> <span>Fotoğrafı Değiştir</span>
+                        </button>
+                        <button id="avatarResetBtn" onclick="resetAvatar()" class="hidden text-[10px] font-orbitron text-gray-500 hover:text-cyber-crimson">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Varsayılana Dön
+                        </button>
+                    </div>
+                    <!-- Cyber Tags under Avatar -->
+                    <div class="mt-2 text-center">
+                        <span class="inline-block px-2.5 py-0.5 text-[10px] font-orbitron tracking-wider bg-cyber-neonGreen/10 border border-cyber-neonGreen text-cyber-neonGreen rounded-full">
+                            <i class="fa-solid fa-user-check text-[9px] mr-1"></i> <span data-edit="c8c473ba0cf">STATUS: LEGAL CITIZEN</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Core Details Grid -->
+                <div class="flex-grow w-full">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-700/60 pb-3 gap-2">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-orbitron text-cyber-cyan tracking-widest"><span data-edit="c5ef60c4c0a">CIVILIAN DOSSIER</span></span>
+                                <span class="text-xs text-gray-400"><span data-edit="c76262c5e99">#803-DB</span></span>
+                            </div>
+                            <h1 class="text-3xl sm:text-4xl font-extrabold font-orbitron tracking-wide text-white uppercase flex items-center gap-3">
+                                <span data-edit="c989290ae55">DANIEL BROWN</span>
+                                <span class="text-xs font-sans font-normal px-2 py-0.5 rounded bg-slate-800 text-cyber-cyan border border-cyber-cyan/30 capitalize">
+                                    <span data-edit="c5a8cd64211">Los Santos Resident</span>
+                                </span>
+                            </h1>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button id="panicTestBtn" type="button" onclick="startTraumaSequence()" class="trauma-btn group">
+                                <span class="trauma-btn-icon"><i class="fa-solid fa-heart-pulse"></i></span>
+                                <span class="flex flex-col items-start leading-tight text-left">
+                                    <span class="text-[9px] tracking-[0.25em] text-red-300/80">TRAUMA REACTION</span>
+                                    <span class="text-[12px] font-bold tracking-wider text-white">DANIEL'İN TRAVMASINI TEST ET</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-right text-[10px] text-red-200/70 transition-transform group-hover:translate-x-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Metrics Cards -->
+                    <div data-sort-group="metrics" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 text-xs font-rajdhani">
+                        <div data-sort-id="birth-date" class="bg-slate-900/80 p-2.5 rounded border border-slate-800">
+                            <span class="text-gray-400 block text-[11px] font-sans"><span data-edit="c367b565359">DOĞUM TARİHİ</span></span>
+                            <span class="text-sm font-bold font-orbitron text-white"><span data-edit="c9cf3c61168">06/03/2000</span></span>
+                        </div>
+                        <div data-sort-id="birth-place" class="bg-slate-900/80 p-2.5 rounded border border-slate-800">
+                            <span class="text-gray-400 block text-[11px] font-sans"><span data-edit="c74d32f31bf">DOĞUM YERİ</span></span>
+                            <span class="text-sm font-bold font-orbitron text-cyber-amber"><span data-edit="c48c5bce201">Monterrey, MX</span></span>
+                        </div>
+                        <div data-sort-id="blood" class="bg-slate-900/80 p-2.5 rounded border border-slate-800">
+                            <span class="text-gray-400 block text-[11px] font-sans"><span data-edit="c52e7852412">KAN GRUBU</span></span>
+                            <span class="text-sm font-bold font-orbitron text-cyber-crimson"><span data-edit="c67a5949ba1">A (Rh+)</span></span>
+                        </div>
+                        <div data-sort-id="skin" class="bg-slate-900/80 p-2.5 rounded border border-slate-800">
+                            <span class="text-gray-400 block text-[11px] font-sans"><span data-edit="c3c8384adde">TEN RENGİ</span></span>
+                            <span class="text-sm font-bold font-orbitron text-gray-200"><span data-edit="c2feb950c43">Açık Buğday</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Legal / Illegal level & committed crimes (Netlify Database: site_settings) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 text-xs">
+                        <div class="sm:col-span-2 bg-slate-900/80 p-3 rounded border border-slate-800">
+                            <div class="flex justify-between items-center gap-2 mb-2">
+                                <span class="text-gray-400 text-[11px] font-sans"><span data-edit="cl9a1e2b3c4">LEGAL / İLLEGAL SEVİYESİ</span></span>
+                                <span id="legalityLabel" class="font-orbitron font-bold text-[11px]"></span>
+                            </div>
+                            <div class="relative h-3 rounded-full" style="background:linear-gradient(90deg,#00ff88 0%,#ffb700 50%,#ff2a5f 100%)" role="meter" aria-label="Legal / illegal seviyesi" aria-valuemin="0" aria-valuemax="100" id="legalityMeter">
+                                <div id="legalityMarker" class="absolute top-1/2 w-4 h-4 rounded-full bg-white border-2 border-slate-900 transition-all duration-500" style="left:0%; transform:translate(-50%,-50%); box-shadow:0 0 10px rgba(255,255,255,0.6)"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] font-orbitron mt-1.5">
+                                <span class="text-cyber-neonGreen">LEGAL</span>
+                                <span class="text-cyber-amber">GRİ BÖLGE</span>
+                                <span class="text-cyber-crimson">İLLEGAL</span>
+                            </div>
+                            <div class="admin-only mt-2 flex items-center gap-2">
+                                <input type="range" id="legalityRange" min="0" max="100" step="1" value="10" class="flex-grow accent-amber-400" aria-label="Legal / illegal seviyesini ayarla">
+                                <span class="text-[10px] text-gray-500 whitespace-nowrap">Bırakınca kaydedilir</span>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/80 p-3 rounded border border-slate-800">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-400 text-[11px] font-sans"><i class="fa-solid fa-handcuffs mr-1 text-cyber-crimson"></i><span data-edit="cl9a1e2b3c5">İŞLEDİĞİ SUÇLAR</span></span>
+                                <span id="crimeCount" class="text-[10px] font-orbitron text-gray-500"></span>
+                            </div>
+                            <div id="crimeList" class="flex flex-wrap gap-1.5"></div>
+                            <form onsubmit="addCrime(event)" class="admin-only mt-2 flex gap-1">
+                                <input type="text" id="crimeName" maxlength="80" required placeholder="Suç adı..." class="min-w-0 flex-grow bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white text-[11px] focus:outline-none focus:border-cyber-crimson">
+                                <input type="number" id="crimeCountInput" min="1" max="999" value="1" title="Kaç kez" class="w-12 bg-slate-900 border border-slate-700 rounded px-1 py-1 text-white text-[11px] focus:outline-none focus:border-cyber-crimson">
+                                <button type="submit" class="px-2 py-1 bg-cyber-crimson/20 hover:bg-cyber-crimson/40 border border-cyber-crimson/60 text-cyber-crimson rounded" title="Suç ekle"><i class="fa-solid fa-plus"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Navigation Tabs Bar -->
+        <nav id="tabNav" data-sort-group="tabs" data-sort-style="tabs" class="flex overflow-x-auto gap-2 border-b border-cyber-cyan/20 pb-2 no-scrollbar">
+            <button onclick="switchTab('tab-summary')" id="nav-tab-summary" data-sort-id="summary" class="tab-btn active px-4 py-2.5 rounded-t-lg bg-cyber-cyan/20 border-t-2 border-cyber-cyan text-cyber-cyan font-orbitron text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+                <i class="fa-solid fa-id-card"></i> <span class="tab-num">1.</span> Genel Bakış
+            </button>
+            <button onclick="switchTab('tab-bio')" id="nav-tab-bio" data-sort-id="bio" class="tab-btn px-4 py-2.5 rounded-t-lg bg-slate-900/60 hover:bg-slate-800 text-gray-400 hover:text-white font-orbitron text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+                <i class="fa-solid fa-book-open"></i> <span class="tab-num">2.</span> Biyografi & Hikaye
+            </button>
+            <button onclick="switchTab('tab-attitudes')" id="nav-tab-attitudes" data-sort-id="attitudes" class="tab-btn px-4 py-2.5 rounded-t-lg bg-slate-900/60 hover:bg-slate-800 text-gray-400 hover:text-white font-orbitron text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+                <i class="fa-solid fa-people-arrows"></i> <span class="tab-num">3.</span> Vatandaş Yaklaşımları
+            </button>
+            <button onclick="switchTab('tab-contacts')" id="nav-tab-contacts" data-sort-id="contacts" class="tab-btn px-4 py-2.5 rounded-t-lg bg-slate-900/60 hover:bg-slate-800 text-gray-400 hover:text-white font-orbitron text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+                <i class="fa-solid fa-users"></i> <span class="tab-num">4.</span> Rehber / Kişiler
+            </button>
+            <button onclick="switchTab('tab-logs')" id="nav-tab-logs" data-sort-id="logs" class="tab-btn px-4 py-2.5 rounded-t-lg bg-slate-900/60 hover:bg-slate-800 text-gray-400 hover:text-white font-orbitron text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+                <i class="fa-solid fa-journal-whills"></i> <span class="tab-num">5.</span> Karakter Günlüğü
+            </button>
+            <button onclick="switchTab('tab-skills')" id="nav-tab-skills" data-sort-id="skills" class="tab-btn px-4 py-2.5 rounded-t-lg bg-slate-900/60 hover:bg-slate-800 text-gray-400 hover:text-white font-orbitron text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+                <i class="fa-solid fa-fire"></i> <span class="tab-num">6.</span> Sosyal Beceriler & Etkinlik
+            </button>
+        </nav>
+
+        <!-- TAB CONTENT CONTAINER -->
+        <div id="tab-content" class="flex-grow">
+
+            <!-- TAB 1: GENEL BAKIŞ (SUMMARY) -->
+            <div data-sort-group="summary" data-sort-style="section" id="tab-summary" class="tab-pane space-y-6">
+                <!-- Personal Info & Family Info Grid -->
+                <div data-sort-group="summary-cards" data-sort-id="info-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Personal Info Card -->
+                    <div data-sort-id="personal" class="glass-panel p-5 rounded-xl space-y-4">
+                        <div class="flex items-center gap-2 text-cyber-cyan font-orbitron font-bold border-b border-slate-700/60 pb-2">
+                            <i class="fa-solid fa-address-card text-base"></i>
+                            <h3 class="text-base uppercase tracking-wider"><span data-edit="c309d1fb272">KİŞİSEL KÜNYE</span> & <span data-edit="cbab06d0e24">AİLE</span></h3>
+                        </div>
+
+                        <div data-sort-group="personal-rows" data-sort-style="compact" class="space-y-3 text-sm">
+                            <div data-sort-id="languages" class="flex justify-between border-b border-slate-800/80 pb-1.5">
+                                <span class="text-gray-400"><span data-edit="ca59b656b59">Bildiği Diller:</span></span>
+                                <span class="font-semibold text-cyber-cyan"><span data-edit="c7c48ab0286">İspanyolca, İngilizce, Swanca</span></span>
+                            </div>
+                            <div data-sort-id="scar" class="flex justify-between border-b border-slate-800/80 pb-1.5">
+                                <span class="text-gray-400"><span data-edit="c1d9c19690f">Kalıcı Yara / İZ:</span></span>
+                                <span class="font-medium text-emerald-400"><i class="fa-solid fa-shield-check mr-1"></i><span data-edit="cc51814d486">Herhangi bir kalıcı yarası yoktur</span></span>
+                            </div>
+                            <div data-sort-id="siblings" class="flex justify-between border-b border-slate-800/80 pb-1.5">
+                                <span class="text-gray-400"><span data-edit="c2e824b59f5">Kardeş Sayısı:</span></span>
+                                <span class="font-medium text-white"><span data-edit="c4bf101ea43">3 Kardeşin en büyüğüdür</span></span>
+                            </div>
+                            <div data-sort-id="past-home" class="flex justify-between border-b border-slate-800/80 pb-1.5">
+                                <span class="text-gray-400"><span data-edit="cb1386347b7">Geçmiş Yaşam Yeri:</span></span>
+                                <span class="font-medium text-cyber-amber"><span data-edit="c0f4fc22934">Sumidero Kasabası</span> & <span data-edit="c35fc696fb2">Monterrey Şehri</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Family Details Box -->
+                        <div class="bg-slate-900/90 p-3.5 rounded-lg border border-slate-800 space-y-2 mt-2">
+                            <span class="text-xs font-orbitron text-cyber-amber uppercase tracking-wider block">
+                                <i class="fa-solid fa-people-roof mr-1"></i> <span data-edit="cba97894ac6">Aile Detayları</span>
+                            </span>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                <strong class="text-white"><span data-edit="c508e181906">Anne (Hulla):</span></strong> <span data-edit="c79f4810948">Ev hanımı, hayatını çocuklarına adamış şefkatli anne.</span><br>
+                                <strong class="text-white"><span data-edit="c836770f476">Baba (Fred):</span></strong> <span data-edit="cabdb72008c">Çok çalışan, yoğun temposuna rağmen çocuklarına zaman ayıran sevgi dolu baba.</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Roleplay Philosophy Card -->
+                    <div data-sort-id="philosophy" class="glass-panel p-5 rounded-xl space-y-4">
+                        <div class="flex items-center gap-2 text-cyber-amber font-orbitron font-bold border-b border-slate-700/60 pb-2">
+                            <i class="fa-solid fa-brain text-base"></i>
+                            <h3 class="text-base uppercase tracking-wider"><span data-edit="c4f13e1c8d4">ROL YAPMA FELSEFESİ</span> & <span data-edit="c9280fef12a">SOSYAL VİZYON</span></h3>
+                        </div>
+
+                        <div data-sort-group="philosophy" class="space-y-3">
+                            <div data-sort-id="p1" class="bg-slate-900/60 p-3 rounded border border-cyber-amber/20">
+                                <h4 class="text-xs font-orbitron text-cyber-amber font-bold mb-1">
+                                    <i class="fa-solid fa-balance-scale mr-1"></i> <span data-edit="cc11ccf687d">ROL TARZI (DOĞAL VE KUSURLU)</span>
+                                </h4>
+                                <p class="text-xs text-gray-300 leading-relaxed">
+                                    <span data-edit="cf89f2eef2e">Kazanma hırsı olmayan, kaybetmesini bilen, empati duygusu yüksek ve insanı insani kusurlarıyla kabul eden doğal bir karakter.</span>
+                                </p>
+                            </div>
+
+                            <div data-sort-id="p2" class="bg-slate-900/60 p-3 rounded border border-cyber-cyan/20">
+                                <h4 class="text-xs font-orbitron text-cyber-cyan font-bold mb-1">
+                                    <i class="fa-solid fa-handshake-angle mr-1"></i> <span data-edit="c9280fef12a-1">SOSYAL VİZYON</span> & <span data-edit="c9dc40187d2">KAZANIM</span>
+                                </h4>
+                                <p class="text-xs text-gray-300 leading-relaxed">
+                                    <span data-edit="c111ac538e5">Egolu değil; insanları aşağılamayan, başarısını tebrik eden, sosyal olmayan oyuncuları rollere dahil edip ellerinden tutan paylaşımcı yapı.</span>
+                                </p>
+                            </div>
+
+                            <div data-sort-id="p3" class="bg-slate-900/60 p-3 rounded border border-purple-500/20">
+                                <h4 class="text-xs font-orbitron text-purple-400 font-bold mb-1">
+                                    <i class="fa-solid fa-masks-theater mr-1"></i> <span data-edit="c0129c44aa7">KARAKTER GELİŞİMİ (GRİ BÖLGE)</span>
+                                </h4>
+                                <p class="text-xs text-gray-300 leading-relaxed">
+                                    <span data-edit="ca84eab4a9b">Şehre %100 legal başlar. Doğrudan illegal olmaz; yaşadığı olaylar, maddi zorluklar ve kurduğu ilişkiler doğrultusunda gri bölgede gelişen bir çizgi.</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hobbies Section Cards -->
+                <div data-sort-id="hobbies" class="space-y-3">
+                    <div class="flex items-center gap-2 text-cyber-cyan font-orbitron font-bold">
+                        <i class="fa-solid fa-heart text-base"></i>
+                        <h3 class="text-base uppercase tracking-wider"><span data-edit="c30b8c8949f">KARAKTER HOBİLERİ</span></h3>
+                    </div>
+
+                    <div data-sort-group="hobby-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Hobby 1 -->
+                        <div data-sort-id="h1" class="bg-slate-900/90 border border-slate-800 p-4 rounded-lg hover:border-cyber-cyan/50 transition-all group">
+                            <div class="text-cyber-cyan text-2xl mb-2 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-car-side"></i>
+                            </div>
+                            <h4 class="font-orbitron text-sm font-bold text-white mb-1"><span data-edit="c68b38f9037">Araba Kullanmak</span></h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">
+                                <span data-edit="ce96b0b6768">Küçüklükten beri arkadaşı Javier sayesinde tutkusu oluştu. Normal düzeyde bir sürücüdür ama direksiyon başında güven hisseder.</span>
+                            </p>
+                        </div>
+
+                        <!-- Hobby 2 -->
+                        <div data-sort-id="h2" class="bg-slate-900/90 border border-slate-800 p-4 rounded-lg hover:border-cyber-amber/50 transition-all group">
+                            <div class="text-cyber-amber text-2xl mb-2 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-hammer"></i>
+                            </div>
+                            <h4 class="font-orbitron text-sm font-bold text-white mb-1"><span data-edit="ca9da488347">Ev İşleri</span> & <span data-edit="cf677e91510">Tamirat</span></h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">
+                                <span data-edit="cbdcda78f01">Ucuza aldığı eski bir evi kendi emekleriyle yenileyip 2 katına satmasından gelen pratik yenileme ve tamir yeteneği.</span>
+                            </p>
+                        </div>
+
+                        <!-- Hobby 3 -->
+                        <div data-sort-id="h3" class="bg-slate-900/90 border border-slate-800 p-4 rounded-lg hover:border-blue-400/50 transition-all group">
+                            <div class="text-blue-400 text-2xl mb-2 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-person-swimming"></i>
+                            </div>
+                            <h4 class="font-orbitron text-sm font-bold text-white mb-1"><span data-edit="ccc3d4f791e">Yüzme</span></h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">
+                                <span data-edit="c425bee9bc6">Lise döneminde sosyal çevresi azken gittiği kurslardan kalma bir hobidir. Ona huzur verir (insani sınırlar dahilinde).</span>
+                            </p>
+                        </div>
+
+                        <!-- Hobby 4 -->
+                        <div data-sort-id="h4" class="bg-slate-900/90 border border-slate-800 p-4 rounded-lg hover:border-cyber-neonGreen/50 transition-all group">
+                            <div class="text-cyber-neonGreen text-2xl mb-2 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-utensils"></i>
+                            </div>
+                            <h4 class="font-orbitron text-sm font-bold text-white mb-1"><span data-edit="ceed5e2bb83">Bagaj Lezzetleri</span></h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">
+                                <span data-edit="c56f0df2f9a">Ucuz et, bol acı sos ve mısır unuyla harika tacolar hazırlar. Bagajındaki tüple insanları etrafında toplar ve sosyalleşir.</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phobias & Traumas Section -->
+                <div data-sort-id="traumas" class="space-y-3">
+                    <div class="flex items-center gap-2 text-cyber-crimson font-orbitron font-bold">
+                        <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                        <h3 class="text-base uppercase tracking-wider"><span data-edit="c8991fe74a5">FOBİLER, TRAVMALAR VE ALIŞKANLIKLAR</span></h3>
+                    </div>
+
+                    <div data-sort-group="trauma-cards" id="traumaContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Trauma 1 -->
+                        <div data-sort-id="t1" class="glass-panel-crimson p-4 rounded-lg space-y-2 relative overflow-hidden">
+                            <div class="flex items-center gap-2 text-cyber-crimson font-orbitron text-sm font-bold">
+                                <i class="fa-solid fa-heart-crack"></i>
+                                <span><span data-edit="c9d99a155f8">1. Ani Kayıp Travması</span></span>
+                            </div>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                <span data-edit="c32b6b15557">En yakın arkadaşı Javier'in ailesini bir trafik kazasında aniden kaybetmesi nedeniyle hissettiği derin korku ve çaresizlik travması.</span>
+                            </p>
+                        </div>
+
+                        <!-- Trauma 2 -->
+                        <div data-sort-id="t2" class="glass-panel-crimson p-4 rounded-lg space-y-2 relative overflow-hidden">
+                            <div class="flex items-center gap-2 text-cyber-crimson font-orbitron text-sm font-bold">
+                                <i class="fa-solid fa-chart-line-down"></i>
+                                <span><span data-edit="c609d4f2af9">2. Başarısızlık Korkusu</span></span>
+                            </div>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                <span data-edit="c14e64a0021">Meksika'dan Los Santos'a tek başına taşınırken oluşan bunalım: "Acaba başarabilecek miyim?" korkusu ve kaygısı.</span>
+                            </p>
+                        </div>
+
+                        <!-- Trauma 3 & Habit (Interactive panic elements) -->
+                        <div data-sort-id="t3" id="phoneTraumaCard" class="glass-panel-crimson p-4 rounded-lg space-y-2 relative overflow-hidden transition-all duration-300">
+                            <div class="flex items-center justify-between text-cyber-crimson font-orbitron text-sm font-bold">
+                                <span><i class="fa-solid fa-phone-volume mr-1"></i> <span data-edit="c1bcccf4af8">3. Gece Telefonu Çınlaması</span></span>
+                                <span id="pulseIndicator" class="text-[10px] px-1.5 py-0.5 rounded bg-cyber-crimson/20 border border-cyber-crimson text-cyber-crimson hidden">PANIC</span>
+                            </div>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                <span data-edit="c853ae36376">Acı kaza haberini gece geç saatte telefondan aldığı için gece telefon çalınca kulakları çınlar, nabzı yükselir ve panik atak geçirir.</span>
+                            </p>
+                            <div class="pt-2 border-t border-cyber-crimson/20 text-[11px] text-gray-400">
+                                <strong class="text-cyber-amber"><span data-edit="c5589ac3dfe">Travmatik Alışkanlık:</span></strong> <span data-edit="c2668de28a8">Telefonu daima titreşimdedir. Masalarda ekranı kapalı şekilde ters çevirip bırakır.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: BİYOGRAFİ & HİKAYE (STORY TIMELINE) -->
+            <div id="tab-bio" class="tab-pane hidden space-y-6">
+                <div class="glass-panel p-6 rounded-xl space-y-6">
+                    <div class="flex flex-wrap items-center gap-3 border-b border-slate-700/60 pb-3">
+                        <i class="fa-solid fa-book-bookmark text-2xl text-cyber-cyan"></i>
+                        <div>
+                            <h2 class="text-xl font-orbitron font-bold text-white uppercase"><span data-edit="cf6215f2a65">DANIEL BROWN: HAYAT HİKAYESİ</span></h2>
+                            <p class="text-xs text-gray-400"><span data-edit="c684ca9bd57">Monterrey sokaklarından Los Santos metropolüne sıfırdan başlama serüveni</span></p>
+                        </div>
+                        <div class="ml-auto flex flex-wrap items-center gap-2">
+                            <button id="storyAddBtn" onclick="openAddStoryModal()" class="admin-only px-3 py-1.5 bg-cyber-cyan/20 hover:bg-cyber-cyan/30 border border-cyber-cyan text-cyber-cyan text-xs font-orbitron font-bold rounded flex items-center gap-1.5">
+                                <i class="fa-solid fa-plus"></i> Yeni Aşama Ekle
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Story Timeline List -->
+                    <div class="relative border-l-2 border-cyber-cyan/40 ml-4 sm:ml-6 space-y-8 py-2">
+                        <!-- Dynamic stages (Netlify Database) -->
+                        <div id="storyDynamic" class="space-y-8"><p class="pl-6 text-xs font-orbitron text-gray-500">Hikaye yükleniyor...</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: SOSYAL BECERİLER & ETKİNLİKLER -->
+            <div data-sort-group="skills" data-sort-style="section" id="tab-skills" class="tab-pane hidden space-y-6">
+                <!-- Feature 1: Bagajda Taco -->
+                <div data-sort-id="taco" class="glass-panel p-6 rounded-xl space-y-4">
+                    <div class="flex items-center gap-3 border-b border-slate-700/60 pb-3 text-cyber-neonGreen font-orbitron">
+                        <i class="fa-solid fa-truck-pickup text-2xl"></i>
+                        <div>
+                            <h3 class="text-lg font-bold uppercase tracking-wider text-white"><span data-edit="c005095e905">SOSYAL SİLAH: "BAGAJDA TACO" (STREET CHEF)</span></h3>
+                            <p class="text-xs text-gray-400"><span data-edit="c940f116571">İnsanları bir araya getiren ve sohbet başlatan sokak lezzeti konsepti</span></p>
+                        </div>
+                    </div>
+
+                    <div data-sort-group="taco-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div data-sort-id="k1" class="bg-slate-900/80 p-4 rounded-lg border border-slate-800 space-y-2">
+                            <span class="text-xs font-orbitron text-cyber-neonGreen font-bold uppercase"><i class="fa-solid fa-fire-burner mr-1"></i> <span data-edit="c21dcde8f2e">Malzemeler</span> & <span data-edit="c0f86a955e3">Ruh</span></span>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                <span data-edit="cf6c3d49410">Lüks şef değildir; ucuz et, bol acı sos ve mısır unuyla harika Meksika tacoları hazırlar.</span>
+                            </p>
+                        </div>
+                        <div data-sort-id="k2" class="bg-slate-900/80 p-4 rounded-lg border border-slate-800 space-y-2">
+                            <span class="text-xs font-orbitron text-cyber-cyan font-bold uppercase"><i class="fa-solid fa-toolbox mr-1"></i> <span data-edit="c4735797745">Ekipman</span></span>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                <span data-edit="cb68ad58146">Arabasının bagajına monte ettiği portatif tüp ve döküm tava ile her yerde anında tezgah açabilir.</span>
+                            </p>
+                        </div>
+                        <div data-sort-id="k3" class="bg-slate-900/80 p-4 rounded-lg border border-slate-800 space-y-2">
+                            <span class="text-xs font-orbitron text-cyber-amber font-bold uppercase"><i class="fa-solid fa-comments mr-1"></i> <span data-edit="c42dbef84f2">Sosyal Etki</span></span>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                <span data-edit="c368c2d02ef">İnsanları bagaj etrafında toplar, acı sos bahanesiyle rollere dahil eder ve hikaye anlattırır.</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Çelik Mide Contest Project -->
+                <div data-sort-id="contest" class="glass-panel p-6 rounded-xl space-y-5">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-slate-700/60 pb-3 gap-2">
+                        <div class="flex items-center gap-3 text-cyber-amber font-orbitron">
+                            <i class="fa-solid fa-pepper-hot text-2xl text-cyber-amber"></i>
+                            <div>
+                                <h3 class="text-lg font-bold uppercase tracking-wider text-white"><span data-edit="c82f4876c1a">TOPLULUK ETKİNLİK PROJESİ: "ÇELİK MİDE" YEME YARIŞMASI</span></h3>
+                                <p class="text-xs text-gray-400"><span data-edit="c8b40264ba9">Şehirdeki tüm katmanları eşitleyen orijinal acı yeme etkinliği</span></p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-orbitron px-3 py-1 bg-cyber-amber/10 border border-cyber-amber text-cyber-amber rounded-full self-start sm:self-auto">
+                            <span data-edit="c77f58322e9">COMMUNITY EVENT</span>
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="space-y-3">
+                            <div class="bg-slate-900/80 p-4 rounded-lg border border-slate-800">
+                                <h4 class="text-xs font-orbitron text-cyber-cyan font-bold uppercase mb-1">
+                                    <i class="fa-solid fa-bullseye mr-1"></i> <span data-edit="ce503985018">Etkinlik Amacı</span>
+                                </h4>
+                                <p class="text-xs text-gray-300 leading-relaxed">
+                                    <span data-edit="cbd27d848a5">Eski ve yeni oyuncuları kaynaştırmak, zengin/fakir/polis/suçlu hiyerarşisini ortadan kaldırıp herkesi aynı masada toplamak ve eğlenceli rol pasları yaratmak.</span>
+                                </p>
+                            </div>
+
+                            <div class="bg-slate-900/80 p-4 rounded-lg border border-slate-800">
+                                <h4 class="text-xs font-orbitron text-cyber-amber font-bold uppercase mb-1">
+                                    <i class="fa-solid fa-burger mr-1"></i> <span data-edit="c967a678529">Etkinlik Konsepti</span>
+                                </h4>
+                                <p class="text-xs text-gray-300 leading-relaxed">
+                                    <span data-edit="cdb2cdb936c">Orijinal Meksika acılarıyla (Habanero</span> & <span data-edit="cf49ee16c36">Carolina Reaper soslu) hazırlanan özel soslu hamburgerleri en çok yeme yarışı. Masada en son durabilen "Çelik Mide" unvanını alır.</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Step by Step Workflow -->
+                        <div class="bg-slate-900/90 p-4 rounded-lg border border-slate-800 space-y-3">
+                            <h4 class="text-xs font-orbitron text-white font-bold uppercase tracking-wider border-b border-slate-700 pb-2">
+                                <i class="fa-solid fa-list-check text-cyber-cyan mr-1"></i> <span data-edit="c1158426597">Rol Akışı</span> & <span data-edit="c1d96325a18">Prosedür</span>
+                            </h4>
+                            
+                            <ol class="space-y-2 text-xs text-gray-300">
+                                <li class="flex items-start gap-2">
+                                    <span class="w-5 h-5 rounded-full bg-cyber-cyan/20 text-cyber-cyan font-orbitron font-bold text-[10px] flex items-center justify-center shrink-0">1</span>
+                                    <span><strong><span data-edit="c788844551f">Sorumluluk Reddi Formu:</span></strong> <span data-edit="c8c33df0e5d">Katılımcılara midesinde oluşabilecek hasarlara karşı hukuki waiver/form imzalatılır.</span></span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="w-5 h-5 rounded-full bg-cyber-cyan/20 text-cyber-cyan font-orbitron font-bold text-[10px] flex items-center justify-center shrink-0">2</span>
+                                    <span><strong><span data-edit="c8402eefc63">EMS / LSFD Sağlık Kontrolü:</span></strong> <span data-edit="cd45a479a7d">Yarışma öncesi doktorlar tansiyon ve mide kontrolü yaparak tıbbi role dahil edilir.</span></span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="w-5 h-5 rounded-full bg-cyber-cyan/20 text-cyber-cyan font-orbitron font-bold text-[10px] flex items-center justify-center shrink-0">3</span>
+                                    <span><strong><span data-edit="c69129b7ca8">Restoran Anlaşması</span> & <span data-edit="c464a592e9b">Final:</span></strong> <span data-edit="c085cd38b74">Bir local dükkan ile sponsorluk yapılarak büyük ödüllü final kapışması düzenlenir.</span></span>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: REHBER / TANIŞILAN KİŞİLER (NETLIFY DATABASE) -->
+            <div data-sort-group="contact-sections" data-sort-style="section" id="tab-contacts" class="tab-pane hidden space-y-5">
+                <!-- Meksika'daki Yakınları (collapsible, closed by default) -->
+                <div data-sort-id="mexico" class="glass-panel p-5 rounded-xl">
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="mexicoToggleBtn" onclick="toggleMexicoSection()" aria-expanded="false" aria-controls="mexicoSectionBody" class="flex-grow flex items-center gap-2 text-left group">
+                            <i class="fa-solid fa-house-flag text-lg text-cyber-amber"></i>
+                            <div>
+                                <h3 class="text-base font-orbitron font-bold uppercase tracking-wider text-white group-hover:text-cyber-amber transition-colors">MEKSİKA'DAKİ YAKINLARI <span id="mexicoCount" class="text-[11px] text-gray-500 font-normal"></span></h3>
+                                <p id="mexicoHint" class="text-[11px] text-gray-400">Gizli bölüm — görmek için tıklayın</p>
+                            </div>
+                            <i id="mexicoChevron" class="fa-solid fa-chevron-down ml-auto mr-2 text-cyber-amber transition-transform duration-300"></i>
+                        </button>
+                        <button onclick="openAddContactModal('mexico')" class="admin-only px-3 py-1.5 bg-cyber-amber/10 hover:bg-cyber-amber/25 border border-cyber-amber/60 text-cyber-amber text-xs font-orbitron font-bold rounded flex items-center gap-1 shrink-0">
+                            <i class="fa-solid fa-user-plus"></i> Yakın Ekle
+                        </button>
+                    </div>
+                    <div id="mexicoSectionBody" class="hidden mt-4 pt-4 border-t border-slate-700/60 space-y-3">
+                        <p class="text-[11px] text-gray-400">Monterrey ve Sumidero'dan geride kalanlar</p>
+                        <div id="mexicoContactsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                    </div>
+                </div>
+
+                <!-- Los Santos Rehberi -->
+                <div data-sort-id="los-santos" class="glass-panel p-5 rounded-xl space-y-4">
+                    <!-- Controls Bar: Search + Filter + Add Button -->
+                    <div class="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center border-b border-slate-700/60 pb-4">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <!-- Filter Buttons -->
+                            <button onclick="filterContacts('Tümü')" class="contact-filter-btn active px-3 py-1.5 rounded text-xs font-orbitron bg-cyber-cyan/20 text-cyber-cyan border border-cyber-cyan">Tümü</button>
+                            <button onclick="filterContacts('İlişki / Aşk')" class="contact-filter-btn px-3 py-1.5 rounded text-xs font-orbitron bg-slate-800 text-gray-400 hover:text-white">İlişki / Aşk</button>
+                            <button onclick="filterContacts('Arkadaş')" class="contact-filter-btn px-3 py-1.5 rounded text-xs font-orbitron bg-slate-800 text-gray-400 hover:text-white">Arkadaş</button>
+                            <button onclick="filterContacts('Rakip')" class="contact-filter-btn px-3 py-1.5 rounded text-xs font-orbitron bg-slate-800 text-gray-400 hover:text-white">Rakip</button>
+                            <button onclick="filterContacts('Ortak')" class="contact-filter-btn px-3 py-1.5 rounded text-xs font-orbitron bg-slate-800 text-gray-400 hover:text-white">Ortak</button>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <div class="relative flex-grow">
+                                <input type="text" id="contactSearchInput" oninput="renderContacts()" placeholder="Kişi ara..." class="w-full bg-slate-900 border border-slate-700 text-xs rounded px-3 py-2 text-white focus:outline-none focus:border-cyber-cyan pl-8">
+                                <i class="fa-solid fa-search absolute left-2.5 top-2.5 text-gray-500 text-xs"></i>
+                            </div>
+                            <button onclick="openAddContactModal()" class="admin-only px-3 py-2 bg-cyber-cyan/20 hover:bg-cyber-cyan/30 border border-cyber-cyan text-cyber-cyan text-xs font-orbitron font-bold rounded flex items-center gap-1 shrink-0">
+                                <i class="fa-solid fa-user-plus"></i> Yeni Kişi
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Contacts Grid -->
+                    <div id="contactsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Rendered via JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: KARAKTER GÜNLÜĞÜ / LOGBOOK (NETLIFY DATABASE) -->
+            <div id="tab-logs" class="tab-pane hidden space-y-5">
+                <div class="glass-panel p-5 rounded-xl space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-700/60 pb-3">
+                        <div class="flex items-center gap-2 text-cyber-cyan font-orbitron font-bold">
+                            <i class="fa-solid fa-journal-whills text-lg"></i>
+                            <h3 class="text-base uppercase tracking-wider text-white"><span data-edit="c0ae0100e93">KARAKTER GÜNLÜĞÜ (RP LOGBOOK)</span></h3>
+                        </div>
+                        <button onclick="openAddLogModal()" class="admin-only px-3 py-1.5 bg-cyber-cyan/20 hover:bg-cyber-cyan/30 border border-cyber-cyan text-cyber-cyan text-xs font-orbitron font-bold rounded flex items-center gap-1.5">
+                            <i class="fa-solid fa-pen-to-square"></i> Yeni Günlük Kaydı
+                        </button>
+                    </div>
+
+                    <!-- Logs Timeline Feed -->
+                    <div id="logsFeed" class="space-y-4">
+                        <!-- Rendered via JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: VATANDAŞLARA KARŞI YAKLAŞIMI (NETLIFY DATABASE) -->
+            <div data-sort-group="attitude-sections" data-sort-style="section" id="tab-attitudes" class="tab-pane hidden space-y-5">
+                <!-- Genel tutum çubukları -->
+                <div data-sort-id="balance" class="glass-panel p-5 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-xs font-orbitron font-bold uppercase tracking-wider text-white"><i class="fa-solid fa-city mr-1 text-cyber-cyan"></i><span data-edit="cl9a1e2b3c6">Çevresine Karşı Tutumu</span></span>
+                            <span id="envLabel" class="text-[11px] font-orbitron font-bold"></span>
+                        </div>
+                        <div class="relative h-3 rounded-full" style="background:linear-gradient(90deg,#ff2a5f 0%,#64748b 50%,#00ff88 100%)">
+                            <div class="absolute left-1/2 top-0 bottom-0 w-px bg-white/40"></div>
+                            <div id="envMarker" class="absolute top-1/2 w-4 h-4 rounded-full bg-white border-2 border-slate-900 transition-all duration-500" style="left:50%; transform:translate(-50%,-50%); box-shadow:0 0 10px rgba(255,255,255,0.6)"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] font-orbitron"><span class="text-cyber-crimson">OLUMSUZ</span><span class="text-gray-500">DENGELİ</span><span class="text-cyber-neonGreen">OLUMLU</span></div>
+                        <p class="text-[11px] text-gray-400"><span data-edit="cl9a1e2b3c7">Şehre, düzene ve etrafındaki dünyaya karşı genel bakışı.</span></p>
+                        <div class="admin-only flex items-center gap-2">
+                            <input type="range" id="envRange" min="-100" max="100" step="5" value="0" class="flex-grow accent-cyan-400" aria-label="Çevresine karşı tutumu ayarla">
+                            <span class="text-[10px] text-gray-500 whitespace-nowrap">Bırakınca kaydedilir</span>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-xs font-orbitron font-bold uppercase tracking-wider text-white"><i class="fa-solid fa-people-group mr-1 text-cyber-amber"></i><span data-edit="cl9a1e2b3c8">İnsanlara Karşı Yaklaşımı</span></span>
+                            <span id="peopleLabel" class="text-[11px] font-orbitron font-bold"></span>
+                        </div>
+                        <div class="relative h-3 rounded-full" style="background:linear-gradient(90deg,#ff2a5f 0%,#64748b 50%,#00ff88 100%)">
+                            <div class="absolute left-1/2 top-0 bottom-0 w-px bg-white/40"></div>
+                            <div id="peopleMarker" class="absolute top-1/2 w-4 h-4 rounded-full bg-white border-2 border-slate-900 transition-all duration-500" style="left:50%; transform:translate(-50%,-50%); box-shadow:0 0 10px rgba(255,255,255,0.6)"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] font-orbitron"><span class="text-cyber-crimson">OLUMSUZ</span><span class="text-gray-500">DENGELİ</span><span class="text-cyber-neonGreen">OLUMLU</span></div>
+                        <div class="flex h-1.5 rounded-full overflow-hidden bg-slate-800" title="Olumlu / olumsuz hislerin payı">
+                            <div id="peoplePosBar" class="h-full bg-cyber-neonGreen transition-all duration-500" style="width:0%"></div>
+                            <div id="peopleNeuBar" class="h-full bg-slate-500 transition-all duration-500" style="width:0%"></div>
+                            <div id="peopleNegBar" class="h-full bg-cyber-crimson transition-all duration-500" style="width:0%"></div>
+                        </div>
+                        <p id="peopleDetail" class="text-[11px] text-gray-400"></p>
+                    </div>
+                </div>
+                <div data-sort-id="list" class="glass-panel p-5 rounded-xl space-y-4">
+                    <div class="flex flex-wrap items-center gap-3 border-b border-slate-700/60 pb-3">
+                        <i class="fa-solid fa-people-arrows text-xl text-cyber-amber"></i>
+                        <div>
+                            <h3 class="text-base font-orbitron font-bold uppercase tracking-wider text-white">VATANDAŞLARA KARŞI YAKLAŞIMI <span id="attitudeCount" class="text-[11px] text-gray-500 font-normal"></span></h3>
+                            <p class="text-[11px] text-gray-400">IC bilgi: Daniel'ın tanıdığı karakterlere karşı hissettikleri</p>
+                        </div>
+                        <div class="ml-auto flex flex-wrap items-center gap-2">
+                            <div class="relative">
+                                <input type="text" id="attitudeSearch" oninput="renderAttitudes()" placeholder="Karakter ara..." class="w-44 bg-slate-900 border border-slate-700 text-xs rounded px-3 py-1.5 pl-7 text-white focus:outline-none focus:border-cyber-amber">
+                                <i class="fa-solid fa-search absolute left-2.5 top-2 text-gray-500 text-[11px]"></i>
+                            </div>
+                            <select id="attitudeSort" onchange="renderAttitudes()" class="bg-slate-900 border border-slate-700 text-xs rounded px-2 py-1.5 text-white focus:outline-none focus:border-cyber-amber">
+                                <option value="custom" selected>Özel sıra</option>
+                                <option value="newest">En yeni</option>
+                                <option value="oldest">En eski</option>
+                                <option value="az">İsim (A-Z)</option>
+                            </select>
+                            <button onclick="openTypeManager()" class="admin-only px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-gray-200 text-xs font-orbitron rounded flex items-center gap-1.5">
+                                <i class="fa-solid fa-palette"></i> Duyguları Yönet
+                            </button>
+                            <button onclick="openAttitudeModal()" class="admin-only px-3 py-1.5 bg-cyber-amber/10 hover:bg-cyber-amber/25 border border-cyber-amber/60 text-cyber-amber text-xs font-orbitron font-bold rounded flex items-center gap-1.5">
+                                <i class="fa-solid fa-user-plus"></i> Karakter Ekle
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Feeling filter chips (rendered via JS) -->
+                    <div id="attitudeFilters" class="flex flex-wrap gap-1.5"></div>
+                    <div id="attitudeGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <p class="col-span-full text-center text-gray-500 py-6 text-xs font-orbitron">Yükleniyor...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer Terminal Bar -->
+    <footer class="relative z-20 bg-cyber-bg/95 border-t border-cyber-cyan/30 px-4 py-2 text-[11px] font-rajdhani text-gray-500 flex flex-wrap justify-between items-center">
+        <div>
+            <span>SYSTEM: <span class="text-gray-300">ONLINE</span></span> | 
+            <span>STORAGE: <span id="storyDbStatus" class="text-cyber-cyan">CONNECTING...</span></span>
+        </div>
+        <div>
+            <span>FIVEM RP DOSSIER SYSTEM // DANIEL BROWN #803</span>
+        </div>
+    </footer>
+
+    <!-- MODAL 1: ADD CONTACT MODAL -->
+    <div id="addContactModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-cyber-panel border border-cyber-cyan/50 w-full max-w-md rounded-xl p-5 space-y-4 shadow-2xl relative">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                <h3 id="contactModalTitle" class="font-orbitron text-sm font-bold text-cyber-cyan"><i class="fa-solid fa-user-plus mr-1"></i> YENİ KİŞİ EKLE</h3>
+                <button onclick="closeAddContactModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="contactForm" onsubmit="saveContact(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-gray-400 mb-1">Ad Soyad / Lakap</label>
+                    <input type="text" id="contactName" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Bölüm</label>
+                    <select id="contactSection" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
+                        <option value="los_santos" selected>Los Santos Rehberi</option>
+                        <option value="mexico">Meksika'daki Yakınları</option>
+                    </select>
+                </div>
+                <div id="contactPositionRow">
+                    <label class="block text-gray-400 mb-1">Listedeki Yeri</label>
+                    <select id="contactPosition" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
+                        <option value="top" >En başa ekle</option>
+                        <option value="bottom" selected>En sona ekle</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">İlişki Durumu</label>
+                    <select id="contactStatus" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
+                        <option value="Arkadaş" selected>Arkadaş</option>
+                        <option value="İlişki / Aşk">İlişki / Aşk</option>
+                        <option value="Rakip">Rakip</option>
+                        <option value="Ortak">Ortak</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Karakter Notları / Tanışma Hikayesi</label>
+                    <textarea id="contactNotes" rows="3" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddContactModal()" class="px-3 py-1.5 bg-slate-800 text-gray-300 rounded font-orbitron">İptal</button>
+                    <button type="submit" id="contactSubmitBtn" class="px-4 py-1.5 bg-cyber-cyan text-black font-orbitron font-bold rounded hover:bg-cyan-300">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ADD LOG MODAL -->
+    <div id="addLogModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-cyber-panel border border-cyber-cyan/50 w-full max-w-lg rounded-xl p-5 space-y-4 shadow-2xl relative">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                <h3 id="logModalTitle" class="font-orbitron text-sm font-bold text-cyber-cyan"><i class="fa-solid fa-pen-to-square mr-1"></i> YENİ GÜNLÜK KAYDI</h3>
+                <button onclick="closeAddLogModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="logForm" onsubmit="saveLog(event)" class="space-y-3 text-xs">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-gray-400 mb-1">Tarih</label>
+                        <input type="date" id="logDate" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">Kategori</label>
+                        <select id="logCategory" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
+                            <option value="Sokak & İş">Sokak & İş</option>
+                            <option value="Kişisel Düşünce">Kişisel Düşünce</option>
+                            <option value="Etkinlik Projesi">Etkinlik Projesi</option>
+                            <option value="Önemli Karar">Önemli Karar</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="logPositionRow">
+                    <label class="block text-gray-400 mb-1">Listedeki Yeri</label>
+                    <select id="logPosition" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
+                        <option value="top" selected>En başa ekle</option>
+                        <option value="bottom" >En sona ekle</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Başlık</label>
+                    <input type="text" id="logTitle" placeholder="Örn: Los Santos'a İlk Adım..." required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Günlük İçeriği</label>
+                    <textarea id="logContent" rows="4" placeholder="Karakterinizin hissettiklerini ve yaşadığı rolü yazın..." required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddLogModal()" class="px-3 py-1.5 bg-slate-800 text-gray-300 rounded font-orbitron">İptal</button>
+                    <button type="submit" id="logSubmitBtn" class="px-4 py-1.5 bg-cyber-cyan text-black font-orbitron font-bold rounded hover:bg-cyan-300">Günlüğe Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ADD STORY STAGE MODAL -->
+    <div id="addStoryModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-cyber-panel border border-cyber-cyan/50 w-full max-w-lg rounded-xl p-5 space-y-4 shadow-2xl relative">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                <h3 id="storyModalTitle" class="font-orbitron text-sm font-bold text-cyber-cyan"><i class="fa-solid fa-book-medical mr-1"></i> YENİ HİKAYE AŞAMASI</h3>
+                <button onclick="closeAddStoryModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="storyForm" onsubmit="saveStory(event)" class="space-y-3 text-xs">
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="col-span-2">
+                        <label class="block text-gray-400 mb-1">Dönem / Etiket</label>
+                        <input type="text" id="storyPeriod" maxlength="120" placeholder="Örn: 2026 // LOS SANTOS'TA İLK AYLAR" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">Renk</label>
+                        <select id="storyColor" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
+                            <option value="cyan">Mavi</option>
+                            <option value="crimson">Kırmızı</option>
+                            <option value="amber">Turuncu</option>
+                            <option value="neonGreen">Yeşil</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="storyPositionRow">
+                    <label class="block text-gray-400 mb-1">Listedeki Yeri</label>
+                    <select id="storyPosition" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
+                        <option value="top" >En başa ekle</option>
+                        <option value="bottom" selected>En sona ekle</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Başlık</label>
+                    <input type="text" id="storyTitle" maxlength="200" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Hikaye (paragrafları boş satırla ayırın)</label>
+                    <textarea id="storyContent" rows="7" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-cyan"></textarea>
+                </div>
+                <p id="storyFormError" class="text-cyber-crimson hidden"></p>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddStoryModal()" class="px-3 py-1.5 bg-slate-800 text-gray-300 rounded font-orbitron">İptal</button>
+                    <button type="submit" id="storySubmitBtn" class="px-4 py-1.5 bg-cyber-cyan text-black font-orbitron font-bold rounded hover:bg-cyan-300">Hikayeye Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 5: ATTITUDE (feelings toward a character) -->
+    <div id="attitudeModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-cyber-panel border border-cyber-amber/50 w-full max-w-lg rounded-xl p-5 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                <h3 id="attitudeModalTitle" class="font-orbitron text-sm font-bold text-cyber-amber"><i class="fa-solid fa-user-plus mr-1"></i> KARAKTER EKLE</h3>
+                <button onclick="closeAttitudeModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="attitudeForm" onsubmit="saveAttitude(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-gray-400 mb-1"><i class="fa-solid fa-address-book mr-1 text-cyber-amber"></i>Rehberden Seç (kısayol)</label>
+                    <select id="attitudeContactPick" onchange="pickAttitudeContact(this)" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-amber"></select>
+                    <p class="text-[10px] text-gray-500 mt-1">Rehberdeki birini seçince adı aşağıya otomatik yazılır. Rehberde olmayan biri için adı elle yazabilirsiniz.</p>
+                </div>
+                <div id="attitudePositionRow">
+                    <label class="block text-gray-400 mb-1">Listedeki Yeri</label>
+                    <select id="attitudePosition" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-amber">
+                        <option value="top" selected>En başa ekle</option>
+                        <option value="bottom" >En sona ekle</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Karakter Adı</label>
+                    <input type="text" id="attitudeName" maxlength="120" required placeholder="Örn: Carlos Ramirez" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-amber">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-gray-400">Duygular ve Dereceleri</label>
+                        <div class="flex gap-3">
+                            <button type="button" onclick="openTypeManager()" class="text-gray-400 hover:text-white font-orbitron text-[11px]"><i class="fa-solid fa-palette mr-1"></i> Yeni Duygu Türü</button>
+                            <button type="button" onclick="addMeterRow()" class="text-cyber-amber hover:text-white font-orbitron text-[11px]"><i class="fa-solid fa-plus mr-1"></i> Duygu Ekle</button>
+                        </div>
+                    </div>
+                    <div id="meterRows" class="space-y-2"></div>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Not (isteğe bağlı)</label>
+                    <textarea id="attitudeNote" rows="3" maxlength="2000" placeholder="Örn: Garajdaki olaydan sonra ona güvenmiyor..." class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-amber"></textarea>
+                </div>
+                <p id="attitudeError" class="text-cyber-crimson hidden"></p>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAttitudeModal()" class="px-3 py-1.5 bg-slate-800 text-gray-300 rounded font-orbitron">İptal</button>
+                    <button type="submit" id="attitudeSubmitBtn" class="px-4 py-1.5 bg-cyber-amber text-black font-orbitron font-bold rounded hover:bg-amber-300">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 6: CUSTOM FEELING TYPES -->
+    <div id="typeManagerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-cyber-panel border border-cyber-amber/50 w-full max-w-lg rounded-xl p-5 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                <h3 class="font-orbitron text-sm font-bold text-cyber-amber"><i class="fa-solid fa-palette mr-1"></i> DUYGULARI YÖNET</h3>
+                <button onclick="closeTypeManager()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveCustomType(event)" class="space-y-3 text-xs bg-slate-900/60 border border-slate-800 rounded p-3">
+                <span class="font-orbitron text-[11px] text-white uppercase tracking-wider">Yeni Duygu Ekle</span>
+                <div class="grid grid-cols-6 gap-2 items-end">
+                    <div class="col-span-3">
+                        <label class="block text-gray-400 mb-1">Duygu Adı</label>
+                        <input type="text" id="customTypeName" maxlength="30" required placeholder="Örn: Rekabet Hissediyor" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-amber">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-gray-400 mb-1">Renk</label>
+                        <input type="color" id="customTypeColor" value="#ffb800" class="w-full h-[34px] bg-slate-900 border border-slate-700 rounded cursor-pointer">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-gray-400 mb-1">Simge</label>
+                        <select id="customTypeIcon" onchange="updateCustomTypePreview()" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-amber"></select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Etkisi (genel yaklaşım çubuğu için)</label>
+                    <select id="customTypePolarity" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-cyber-amber">
+                        <option value="positive">Olumlu his</option>
+                        <option value="negative">Olumsuz his</option>
+                        <option value="neutral" selected>Nötr (dengeyi etkilemez)</option>
+                    </select>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-gray-400">Önizleme: <span id="customTypePreview" class="font-semibold"></span></span>
+                    <button type="submit" id="customTypeSaveBtn" class="px-4 py-1.5 bg-cyber-amber text-black font-orbitron font-bold rounded hover:bg-amber-300">Ekle</button>
+                </div>
+                <p id="customTypeError" class="text-cyber-crimson hidden"></p>
+            </form>
+            <div class="space-y-2 text-xs">
+                <span class="font-orbitron text-[11px] text-white uppercase tracking-wider">Eklediğiniz Duygular</span>
+                <div id="customTypeList" class="flex flex-wrap gap-2"></div>
+                <span class="font-orbitron text-[11px] text-gray-400 uppercase tracking-wider block pt-2">Hazır Duygular</span>
+                <div id="builtinTypeList" class="flex flex-wrap gap-1.5"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: EDIT PAGE TEXT -->
+    <div id="editTextModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-cyber-panel border border-cyber-cyan/50 w-full max-w-lg rounded-xl p-5 space-y-4 shadow-2xl relative">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                <h3 class="font-orbitron text-sm font-bold text-cyber-cyan"><i class="fa-solid fa-pen mr-1"></i> METNİ DÜZENLE</h3>
+                <button onclick="closeEditTextModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveEditText(event)" class="space-y-3 text-xs">
+                <textarea id="editTextValue" rows="5" maxlength="5000" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white text-sm focus:outline-none focus:border-cyber-cyan"></textarea>
+                <p class="text-[11px] text-gray-500">Orijinal metin: <span id="editTextDefault" class="text-gray-400"></span></p>
+                <div class="flex flex-wrap justify-between gap-2 pt-1">
+                    <button type="button" id="editTextResetBtn" onclick="resetEditText()" class="px-3 py-1.5 bg-slate-800 text-gray-300 hover:text-cyber-crimson rounded font-orbitron"><i class="fa-solid fa-rotate-left mr-1"></i> Orijinale Dön</button>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="closeEditTextModal()" class="px-3 py-1.5 bg-slate-800 text-gray-300 rounded font-orbitron">İptal</button>
+                        <button type="submit" id="editTextSaveBtn" class="px-4 py-1.5 bg-cyber-cyan text-black font-orbitron font-bold rounded hover:bg-cyan-300">Kaydet</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC (data persisted in Netlify Database) -->
+    <script>
+        // System Clock Initialization
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0];
+            document.getElementById('systemClock').innerText = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Canvas Grid Background Animation
+        const canvas = document.getElementById('gridCanvas');
+        const ctx = canvas.getContext('2d');
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(0, 243, 255, 0.05)';
+            ctx.lineWidth = 1;
+
+            const gridSize = 40;
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+        drawGrid();
+        window.addEventListener('resize', drawGrid);
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all tab panes
+            const panes = document.querySelectorAll('.tab-pane');
+            panes.forEach(pane => pane.classList.add('hidden'));
+
+            // Show selected pane
+            const selectedPane = document.getElementById(tabId);
+            if (selectedPane) selectedPane.classList.remove('hidden');
+
+            // Reset buttons style
+            const navBtns = document.querySelectorAll('.tab-btn');
+            navBtns.forEach(btn => {
+                btn.classList.remove('active', 'bg-cyber-cyan/20', 'border-t-2', 'border-cyber-cyan', 'text-cyber-cyan');
+                btn.classList.add('bg-slate-900/60', 'text-gray-400');
+            });
+
+            // Active button style
+            const activeBtn = document.getElementById('nav-' + tabId);
+            // Keep the address bar in sync so a tab can be shared as a direct link (e.g. /#yaklasimlar)
+            if (typeof TAB_HASHES !== 'undefined') {
+                const hash = Object.keys(TAB_HASHES).find(k => TAB_HASHES[k] === tabId);
+                history.replaceState(null, '', hash ? '#' + hash : location.pathname);
+            }
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-900/60', 'text-gray-400');
+                activeBtn.classList.add('active', 'bg-cyber-cyan/20', 'border-t-2', 'border-cyber-cyan', 'text-cyber-cyan');
+            }
+        }
+
+        // ===== Trauma flashback sequence (temporary, visual only — nothing is saved) =====
+        const TRAUMA_SCRIPT = [
+            { type: 'system', text: '[TARİH: 14.08.2024 - MEXİCO, MONTERREY]' },
+            { type: 'system alert', text: '[SİSTEM UYARISI: ZİHİN BAĞLANIYOR... GEÇMİŞTEKİ O GECE AKTİF]', fx: 'shake' },
+            { type: 'narration', text: "Los Santos'un bugünkü sessizliğinden sıyrılarak, ekran kan kırmızısı bir şokla titremeye başlar. Arka planda Monterrey'in gece yarısı sessizliği ve acı bir telefon sesi yankılanır.", fx: 'wind-ring' },
+            { type: 'speech', speaker: 'DANIEL — uyku sersemi, huzursuz bir sesle', text: '"Bu saatte... Gece yarısının bu kör vakti de kim arıyor beni Allah aşkına?"' },
+            { type: 'narration', text: "Önemsemeyip kapatır. Birkaç saniye sonra telefon tekrar, çok daha ısrarcı ve kulak tırmalayan bir tonla çalmaya başlar. Israrla arayanın Luciano olduğunu görür. Sinirle telefonu açıp çıkışır:", fx: 'ring-hard' },
+            { type: 'speech', speaker: 'DANIEL', text: '"Luciano! Saat gecenin bir yarısı, ne oluyor, neden sıkıştırıp duruyorsun?"', fx: 'stop-shake' },
+            { type: 'speech voice', speaker: 'LUCIANO — titrek ve yıkık bir sesle', text: "\"Daniel... Kapatma. Acil hastaneye gelmen lazım. Javier... Javier'in ailesi, çok büyük bir trafik kazası geçirdi...\"", fx: 'shake' },
+            { type: 'narration', text: "Telefon elinden düşecek gibi olur. Daniel hızla evden fırladığı gibi hastaneye koşar. Kapıdan içeri girdiğinde Luciano, Javier ve Mateo'yu perişan halde hastane koridorunda otururken görür. Kafasından kaynar sular dökülmüştür.", fx: 'heart-fast' },
+            { type: 'narration', text: "Mateo sessizce işaret ederek Daniel'ı yanına çağırır ve o yıkıcı haberi fısıldar:" },
+            { type: 'speech voice', speaker: 'MATEO', text: '"Daniel... Kurtaramadılar. Ailesini kaybettik..."', fx: 'shake' },
+            { type: 'narration', text: "O an her şey durur. Daniel için rüya ile kabusun birbirine girdiği o an, zihnine kazınan silinmez bir travmaya dönüşür. Ağır adımlarla yürür, üzgün bir halde Javier'in yanına oturur ve eliyle dostunun omzunu sıvazlar.", fx: 'heart-slow' },
+            { type: 'narration', text: 'Ekran kararıverir. Derin bir uğultu ve boğucu bir sessizlik...', fx: 'blackout' },
+            { type: 'system final', text: "[ZİHİN TEKRAR LOS SANTOS'A DÖNER: TRAVMA SABİTLENDİ]", fx: 'calm' },
+        ];
+
+        const trauma = { running: false, runId: 0, skipTyping: false, audio: null, heart: null, wind: null };
+
+        function traumaAudio() {
+            if (trauma.audio) return trauma.audio;
+            try { trauma.audio = new (window.AudioContext || window.webkitAudioContext)(); } catch { trauma.audio = null; }
+            return trauma.audio;
+        }
+        function traumaTone(freqs, start, dur, vol = 0.06, type = 'sine') {
+            const ctx = traumaAudio(); if (!ctx) return;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0, ctx.currentTime + start);
+            g.gain.linearRampToValueAtTime(vol, ctx.currentTime + start + 0.02);
+            g.gain.setValueAtTime(vol, ctx.currentTime + start + dur - 0.03);
+            g.gain.linearRampToValueAtTime(0, ctx.currentTime + start + dur);
+            g.connect(ctx.destination);
+            freqs.forEach(f => { const o = ctx.createOscillator(); o.type = type; o.frequency.value = f; o.connect(g); o.start(ctx.currentTime + start); o.stop(ctx.currentTime + start + dur); });
+        }
+        function traumaRing(times, vol) {
+            for (let i = 0; i < times; i++) { traumaTone([440, 480], i * 1.1, 0.4, vol); traumaTone([440, 480], i * 1.1 + 0.5, 0.4, vol); }
+        }
+        function traumaNoise(dur, vol, freq) {
+            const ctx = traumaAudio(); if (!ctx) return null;
+            const buf = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate);
+            const d = buf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+            const src = ctx.createBufferSource(); src.buffer = buf;
+            const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = freq;
+            const g = ctx.createGain(); g.gain.setValueAtTime(0, ctx.currentTime); g.gain.linearRampToValueAtTime(vol, ctx.currentTime + 1);
+            src.connect(f); f.connect(g); g.connect(ctx.destination); src.start();
+            return { stop: () => { try { g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.8); src.stop(ctx.currentTime + 0.9); } catch {} } };
+        }
+        function traumaHeartbeat(intervalMs) {
+            clearInterval(trauma.heart);
+            const beat = () => { traumaTone([55], 0, 0.12, 0.25, 'sine'); traumaTone([48], 0.18, 0.14, 0.18, 'sine'); };
+            beat(); trauma.heart = setInterval(beat, intervalMs);
+        }
+        function traumaStopAudio() {
+            clearInterval(trauma.heart); trauma.heart = null;
+            if (trauma.wind) { trauma.wind.stop(); trauma.wind = null; }
+            if (trauma.audio) { const ctx = trauma.audio; trauma.audio = null; setTimeout(() => ctx.close().catch(() => {}), 1000); }
+        }
+
+        function buildTraumaOverlay() {
+            let ov = document.getElementById('traumaOverlay');
+            if (ov) return ov;
+            ov = document.createElement('div');
+            ov.id = 'traumaOverlay';
+            ov.setAttribute('role', 'dialog');
+            ov.setAttribute('aria-modal', 'true');
+            ov.setAttribute('aria-label', 'Daniel travma testi');
+            ov.innerHTML = `
+                <div class="tr-flash"></div>
+                <button type="button" class="tr-skip" onclick="endTraumaSequence()"><i class="fa-solid fa-xmark mr-1"></i> KAPAT</button>
+                <div class="tr-card-wrap"></div>
+                <div class="tr-dialog" aria-live="polite"></div>
+                <div class="tr-hint">HIZLANDIRMAK İÇİN TIKLA · ÇIKMAK İÇİN ESC</div>`;
+            ov.addEventListener('click', e => { if (!e.target.closest('.tr-skip')) trauma.skipTyping = true; });
+            document.body.appendChild(ov);
+            return ov;
+        }
+
+        function traumaWait(ms, id) {
+            return new Promise(res => {
+                const start = Date.now();
+                const tick = () => {
+                    if (id !== trauma.runId) return res(false);
+                    if (trauma.skipTyping || Date.now() - start >= ms) { trauma.skipTyping = false; return res(true); }
+                    setTimeout(tick, 40);
+                };
+                tick();
+            });
+        }
+
+        async function traumaType(el, text, id) {
+            const caret = document.createElement('span'); caret.className = 'tr-caret';
+            el.appendChild(caret);
+            trauma.skipTyping = false;
+            for (let i = 0; i < text.length; i++) {
+                if (id !== trauma.runId) return false;
+                if (trauma.skipTyping) { el.textContent = text; break; }
+                caret.before(text[i]);
+                await new Promise(r => setTimeout(r, text[i] === '.' ? 160 : (text[i] === ',' ? 100 : 48)));
+            }
+            trauma.skipTyping = false;
+            caret.remove();
+            if (el.textContent !== text) el.textContent = text;
+            return true;
+        }
+
+        function traumaFx(ov, fx) {
+            const flash = ov.querySelector('.tr-flash');
+            const doFlash = () => { flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go'); };
+            switch (fx) {
+                case 'shake': ov.classList.remove('shake'); void ov.offsetWidth; ov.classList.add('shake'); doFlash(); break;
+                case 'wind-ring': trauma.wind = traumaNoise(200, 0.03, 400); traumaRing(2, 0.05); break;
+                case 'heart-fast': traumaHeartbeat(550); break;
+                case 'heart-slow': traumaHeartbeat(1100); break;
+                case 'ring': traumaRing(2, 0.05); break;
+                case 'static': { const s = traumaNoise(2, 0.08, 4000); setTimeout(() => s && s.stop(), 1500); break; }
+                case 'ring-hard': traumaRing(3, 0.09); traumaHeartbeat(700); ov.classList.add('heavy-shake'); doFlash(); break;
+                case 'stop-shake': ov.classList.remove('heavy-shake'); traumaHeartbeat(800); break;
+                case 'blackout': ov.classList.remove('heavy-shake'); ov.classList.add('blackout'); clearInterval(trauma.heart); traumaTone([40, 42], 0, 3, 0.12, 'sine'); break;
+                case 'calm': ov.classList.remove('blackout'); ov.classList.add('calm'); if (trauma.wind) { trauma.wind.stop(); trauma.wind = null; } break;
+            }
+        }
+
+        function flyCardIn(ov) {
+            const wrap = ov.querySelector('.tr-card-wrap');
+            const original = document.getElementById('phoneTraumaCard');
+            wrap.innerHTML = '';
+            if (!original) return;
+            const clone = original.cloneNode(true);
+            clone.removeAttribute('id');
+            clone.removeAttribute('data-sort-id');
+            clone.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+            clone.querySelectorAll('[data-edit]').forEach(n => n.removeAttribute('data-edit'));
+            clone.querySelectorAll('.sort-ctrl').forEach(n => n.remove());
+            clone.querySelectorAll('.hidden').forEach(n => n.classList.remove('hidden'));
+            wrap.appendChild(clone);
+            original.classList.add('panic-mode');
+
+            const from = original.getBoundingClientRect();
+            const to = wrap.getBoundingClientRect();
+            const visible = from.width > 0 && from.bottom > 0 && from.top < window.innerHeight;
+            const startTransform = visible
+                ? `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width})`
+                : 'translateY(60vh) scale(0.6)';
+            wrap.animate(
+                [{ transform: startTransform, opacity: visible ? 1 : 0 }, { transform: 'translate(0,0) scale(1.08)', opacity: 1, offset: 0.8 }, { transform: 'translate(0,0) scale(1)', opacity: 1 }],
+                { duration: 1100, easing: 'cubic-bezier(.2,.8,.2,1)' }
+            );
+        }
+
+        async function startTraumaSequence() {
+            if (trauma.running) return;
+            trauma.running = true;
+            const id = ++trauma.runId;
+            const ov = buildTraumaOverlay();
+            const dialog = ov.querySelector('.tr-dialog');
+            dialog.innerHTML = '';
+            ov.classList.remove('blackout', 'calm', 'shake', 'heavy-shake', 'visible');
+            ov.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            traumaAudio();
+            requestAnimationFrame(() => { ov.classList.add('visible'); flyCardIn(ov); });
+            traumaHeartbeat(900);
+
+            if (!(await traumaWait(2000, id))) return;
+
+            for (const step of TRAUMA_SCRIPT) {
+                if (id !== trauma.runId) return;
+                if (step.fx) traumaFx(ov, step.fx);
+                const line = document.createElement('div');
+                line.className = 'tr-line ' + step.type.split(' ').map(t => t === 'speech' ? '' : t).join(' ');
+                if (step.speaker) {
+                    const sp = document.createElement('span'); sp.className = 'tr-speaker'; sp.textContent = step.speaker;
+                    line.appendChild(sp);
+                }
+                const txt = document.createElement('span'); txt.className = 'tr-text';
+                line.appendChild(txt);
+                if (step.fx === 'blackout') dialog.innerHTML = '';
+                dialog.appendChild(line);
+                dialog.scrollTop = dialog.scrollHeight;
+                if (!(await traumaType(txt, step.text, id))) return;
+                dialog.scrollTop = dialog.scrollHeight;
+                const pause = step.fx === 'blackout' ? 5500 : Math.min(8000, 2800 + step.text.length * 35);
+                if (!(await traumaWait(pause, id))) return;
+            }
+            if (!(await traumaWait(4500, id))) return;
+            endTraumaSequence();
+        }
+
+        function endTraumaSequence() {
+            const ov = document.getElementById('traumaOverlay');
+            trauma.runId++;
+            trauma.running = false;
+            traumaStopAudio();
+            document.getElementById('phoneTraumaCard')?.classList.remove('panic-mode');
+            document.body.style.overflow = '';
+            if (!ov) return;
+            ov.classList.remove('visible', 'heavy-shake', 'shake');
+            setTimeout(() => { if (!trauma.running) ov.classList.remove('open', 'blackout', 'calm'); }, 500);
+        }
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && trauma.running) endTraumaSequence(); });
+
+        // ===== Shared helpers & admin session =====
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+        }
+        function toParagraphs(text) {
+            return escapeHtml(text).split(/\n\s*\n/).map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+        }
+
+        let adminPassword = sessionStorage.getItem('story_admin_pw') || '';
+        const isAdmin = () => !!adminPassword;
+
+        function updateAdminUI() {
+            const admin = isAdmin();
+            document.body.classList.toggle('admin-mode', admin);
+            document.querySelectorAll('.admin-toggle-btn').forEach(btn => {
+                btn.innerHTML = admin
+                    ? '<i class="fa-solid fa-lock-open"></i> <span>Çıkış</span>'
+                    : '<i class="fa-solid fa-lock"></i> <span>Yönetici</span>';
+                btn.classList.toggle('text-cyber-neonGreen', admin);
+                btn.classList.toggle('border-cyber-neonGreen', admin);
+            });
+            renderStory();
+            renderContacts();
+            renderLogs();
+            renderAttitudes();
+            updateAvatarControls();
+        }
+
+        function logoutAdmin() {
+            adminPassword = '';
+            sessionStorage.removeItem('story_admin_pw');
+            updateAdminUI();
+        }
+
+        // The only address whose edits are saved permanently (production database)
+        const LIVE_HOST = 'spontaneous-cheesecake-9f6abe.netlify.app';
+        const isLiveSite = location.hostname === LIVE_HOST;
+        function liveUrl() { return 'https://' + LIVE_HOST + '/' + location.hash; }
+        if (!isLiveSite) {
+            const banner = document.getElementById('previewBanner');
+            banner.classList.remove('hidden');
+            banner.classList.add('flex');
+            document.getElementById('goLiveBtn').addEventListener('click', e => { e.currentTarget.href = liveUrl(); });
+        }
+
+        async function loginAdmin() {
+            // On a test address, offer to switch to the live site before logging in
+            if (!isLiveSite && confirm('Şu an TEST adresindesiniz. Burada yapılan değişiklikler kalıcı olmaz.\n\nTamam: Canlı siteye git ve orada giriş yap\nİptal: Yine de burada devam et')) {
+                location.href = liveUrl();
+                return false;
+            }
+            const pw = prompt('Yönetici şifresini girin:');
+            if (!pw) return false;
+            try {
+                const res = await fetch('/api/story', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-admin-password': pw },
+                    body: JSON.stringify({ verifyOnly: true })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (res.status === 404) { alert('Sunucu bağlantısı bu yayında yok. Değişiklikler kaydedilemez; site Git üzerinden yeniden yayınlanmalı.'); return false; }
+                if (!res.ok) { alert(data.error || 'Giriş başarısız.'); return false; }
+                adminPassword = pw;
+                sessionStorage.setItem('story_admin_pw', pw);
+                updateAdminUI();
+                return true;
+            } catch {
+                alert('Sunucuya ulaşılamadı.');
+                return false;
+            }
+        }
+
+        async function toggleAdmin() {
+            if (isAdmin()) logoutAdmin(); else await loginAdmin();
+        }
+
+        async function requireAdmin() {
+            return isAdmin() || await loginAdmin();
+        }
+
+        // Calls a protected API endpoint; returns parsed data or throws an Error with a user-facing message
+        async function adminRequest(url, method, body) {
+            let res;
+            try {
+                res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
+                    body: body ? JSON.stringify(body) : undefined
+                });
+            } catch {
+                throw new Error('Sunucuya ulaşılamadı.');
+            }
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                if (res.status === 401) logoutAdmin();
+                if (res.status === 404) throw new Error('Sunucu bağlantısı bu yayında yok. Değişiklik kaydedilmedi.');
+                throw new Error(data.error || 'İşlem başarısız.');
+            }
+            return data;
+        }
+
+        async function loadCollection(url) {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error();
+            return res.json();
+        }
+
+        // ===== Rehber (Contacts) — Netlify Database =====
+        let contacts = [];
+        let activeContactFilter = 'Tümü';
+
+        function filterContacts(filter) {
+            activeContactFilter = filter;
+            document.querySelectorAll('.contact-filter-btn').forEach(btn => {
+                if (btn.innerText.includes(filter)) {
+                    btn.className = "contact-filter-btn active px-3 py-1.5 rounded text-xs font-orbitron bg-cyber-cyan/20 text-cyber-cyan border border-cyber-cyan";
+                } else {
+                    btn.className = "contact-filter-btn px-3 py-1.5 rounded text-xs font-orbitron bg-slate-800 text-gray-400 hover:text-white";
+                }
+            });
+            renderContacts();
+        }
+
+        function orderedContacts(section) {
+            const inSection = contacts.filter(c => (section === 'mexico') === (c.section === 'mexico'));
+            return sortByOrder(inSection, section === 'mexico' ? 'contacts-mx' : 'contacts-ls');
+        }
+
+        function contactCard(c, group, index) {
+            let badgeColor = 'bg-cyber-cyan/10 text-cyber-cyan border-cyber-cyan/30';
+            if (c.status === 'İlişki / Aşk') badgeColor = 'bg-pink-500/10 text-pink-400 border-pink-500/30';
+            if (c.status === 'Rakip') badgeColor = 'bg-cyber-crimson/10 text-cyber-crimson border-cyber-crimson/30';
+            if (c.status === 'Ortak') badgeColor = 'bg-cyber-amber/10 text-cyber-amber border-cyber-amber/30';
+            const icon = c.status === 'İlişki / Aşk' ? '<i class="fa-solid fa-heart mr-1"></i>' : '';
+
+            const card = document.createElement('div');
+            card.className = 'bg-slate-900/90 border border-slate-800 p-4 rounded-lg flex flex-col justify-between space-y-3 hover:border-slate-700 transition-all';
+            // Management buttons are only shown in admin mode
+            card.innerHTML = `
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-orbitron font-bold text-white text-sm">${escapeHtml(c.name)}</h4>
+                        <span class="text-[10px] font-orbitron px-2 py-0.5 rounded border ${badgeColor}">${icon}${escapeHtml(c.status)}</span>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed">${escapeHtml(c.notes).replace(/\n/g, '<br>')}</p>
+                </div>
+                <div class="admin-only flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-slate-800/80">
+                    ${group ? itemOrderControls(group, c.id, index) : ''}
+                    <button onclick="openAttitudeForContact(${Number(c.id)})" title="Vatandaşlara Karşı Yaklaşımı paneline ekle / düzenle" class="px-2 py-1 rounded border border-cyber-amber/40 bg-cyber-amber/10 hover:bg-cyber-amber/25 text-[11px] text-cyber-amber font-orbitron flex items-center gap-1">
+                        <i class="fa-solid fa-people-arrows"></i> Yaklaşım
+                    </button>
+                    <button onclick="openEditContactModal(${Number(c.id)})" class="px-2 py-1 rounded border border-cyber-cyan/40 bg-cyber-cyan/10 hover:bg-cyber-cyan/25 text-[11px] text-cyber-cyan font-orbitron flex items-center gap-1">
+                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                    </button>
+                    <button onclick="deleteContact(${Number(c.id)})" class="px-2 py-1 rounded border border-cyber-crimson/40 bg-cyber-crimson/10 hover:bg-cyber-crimson/25 text-[11px] text-cyber-crimson font-orbitron flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i> Kişiyi Sil
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        function toggleMexicoSection(forceOpen) {
+            const body = document.getElementById('mexicoSectionBody');
+            const open = forceOpen === undefined ? body.classList.contains('hidden') : forceOpen;
+            body.classList.toggle('hidden', !open);
+            document.getElementById('mexicoChevron').classList.toggle('rotate-180', open);
+            document.getElementById('mexicoToggleBtn').setAttribute('aria-expanded', String(open));
+            document.getElementById('mexicoHint').textContent = open ? 'Gizlemek için tekrar tıklayın' : 'Gizli bölüm — görmek için tıklayın';
+        }
+
+        function renderContacts() {
+            // Meksika'daki Yakınları (not affected by search/filter)
+            const mexicoGrid = document.getElementById('mexicoContactsGrid');
+            mexicoGrid.innerHTML = '';
+            const mexico = orderedContacts('mexico');
+            document.getElementById('mexicoCount').textContent = `(${mexico.length})`;
+            if (mexico.length === 0) {
+                mexicoGrid.innerHTML = `<div class="col-span-full text-center text-gray-500 py-6 text-xs font-orbitron">Henüz kimse eklenmedi.</div>`;
+            } else {
+                mexico.forEach((c, i) => mexicoGrid.appendChild(contactCard(c, 'contacts-mx', i)));
+            }
+
+            // Los Santos Rehberi
+            const grid = document.getElementById('contactsGrid');
+            const searchQuery = document.getElementById('contactSearchInput').value.toLowerCase();
+            grid.innerHTML = '';
+
+            const filtered = orderedContacts('los_santos').filter(c => {
+                const matchesFilter = (activeContactFilter === 'Tümü') || (c.status === activeContactFilter);
+                const matchesSearch = c.name.toLowerCase().includes(searchQuery) || c.notes.toLowerCase().includes(searchQuery);
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center text-gray-500 py-8 text-xs font-orbitron">Kişi Bulunamadı.</div>`;
+                return;
+            }
+            // Reordering only makes sense on the full, unfiltered list
+            const canOrder = activeContactFilter === 'Tümü' && !searchQuery;
+            filtered.forEach((c, i) => grid.appendChild(contactCard(c, canOrder ? 'contacts-ls' : null, i)));
+        }
+
+        let editingContactId = null;
+
+        function setContactModalMode(editing) {
+            document.getElementById('contactModalTitle').innerHTML = editing
+                ? '<i class="fa-solid fa-user-pen mr-1"></i> KİŞİYİ DÜZENLE'
+                : '<i class="fa-solid fa-user-plus mr-1"></i> YENİ KİŞİ EKLE';
+            document.getElementById('contactSubmitBtn').textContent = editing ? 'Değişiklikleri Kaydet' : 'Kaydet';
+        }
+
+        async function openEditContactModal(id) {
+            if (!(await requireAdmin())) return;
+            const c = contacts.find(x => x.id === id);
+            if (!c) return;
+            editingContactId = id;
+            document.getElementById('contactName').value = c.name;
+            document.getElementById('contactStatus').value = c.status;
+            document.getElementById('contactSection').value = c.section || 'los_santos';
+            document.getElementById('contactNotes').value = c.notes;
+            document.getElementById('contactPositionRow').classList.add('hidden');
+            setContactModalMode(true);
+            document.getElementById('addContactModal').classList.remove('hidden');
+        }
+
+        async function openAddContactModal(section = 'los_santos') {
+            if (!(await requireAdmin())) return;
+            editingContactId = null;
+            document.getElementById('contactForm').reset();
+            setContactModalMode(false);
+            document.getElementById('contactPositionRow').classList.remove('hidden');
+            document.getElementById('contactSection').value = section;
+            document.getElementById('addContactModal').classList.remove('hidden');
+        }
+        function closeAddContactModal() {
+            document.getElementById('addContactModal').classList.add('hidden');
+            document.getElementById('contactForm').reset();
+            editingContactId = null;
+        }
+
+        async function saveContact(e) {
+            e.preventDefault();
+            try {
+                const editing = editingContactId !== null;
+                const row = await adminRequest(editing ? '/api/contacts?id=' + editingContactId : '/api/contacts', editing ? 'PUT' : 'POST', {
+                    name: document.getElementById('contactName').value,
+                    status: document.getElementById('contactStatus').value,
+                    section: document.getElementById('contactSection').value,
+                    notes: document.getElementById('contactNotes').value
+                });
+                const where = document.getElementById('contactPosition').value;
+                if (editing) contacts = contacts.map(x => x.id === row.id ? row : x);
+                else contacts.push(row);
+                renderContacts();
+                if (!editing) placeNewItem(row.section === 'mexico' ? 'contacts-mx' : 'contacts-ls', row.id, where);
+                if (row.section === 'mexico') toggleMexicoSection(true);
+                closeAddContactModal();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        async function deleteContact(id) {
+            if (!(await requireAdmin())) return;
+            if (!confirm('Bu kişi rehberden silinsin mi?')) return;
+            try {
+                await adminRequest('/api/contacts?id=' + id, 'DELETE');
+                contacts = contacts.filter(c => c.id !== id);
+                renderContacts();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        // ===== Karakter Günlüğü (Logs) — Netlify Database =====
+        let logs = [];
+
+        function orderedLogs() {
+            const byDate = [...logs].sort((a, b) => (b.date.localeCompare(a.date)) || (b.id - a.id));
+            return sortByOrder(byDate, 'logs');
+        }
+
+        function renderLogs() {
+            const feed = document.getElementById('logsFeed');
+            feed.innerHTML = '';
+
+            if (logs.length === 0) {
+                feed.innerHTML = `<div class="text-center text-gray-500 py-8 text-xs font-orbitron">Henüz günlük kaydı bulunmuyor.</div>`;
+                return;
+            }
+
+            orderedLogs().forEach((log, index) => {
+                const del = `
+                    <div class="admin-only flex items-center justify-end gap-3 pt-1">
+                        ${itemOrderControls('logs', log.id, index)}
+                        <button onclick="openEditLogModal(${Number(log.id)})" class="text-[10px] text-gray-500 hover:text-cyber-cyan font-orbitron">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i> Düzenle
+                        </button>
+                        <button onclick="deleteLog(${Number(log.id)})" class="text-[10px] text-gray-500 hover:text-cyber-crimson font-orbitron">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Kaydı Sil
+                        </button>
+                    </div>`;
+                const item = document.createElement('div');
+                item.className = 'bg-slate-900/90 border border-slate-800 p-4 rounded-lg space-y-2 hover:border-cyber-cyan/30 transition-all';
+                item.innerHTML = `
+                    <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-2 gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-orbitron text-cyber-cyan font-bold">${escapeHtml(log.title)}</span>
+                            <span class="text-[10px] font-orbitron px-2 py-0.5 rounded bg-slate-800 text-cyber-amber border border-slate-700">${escapeHtml(log.category)}</span>
+                        </div>
+                        <span class="text-[11px] font-orbitron text-gray-500"><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(log.date)}</span>
+                    </div>
+                    <div class="text-xs text-gray-300 leading-relaxed space-y-2">${toParagraphs(log.content)}</div>
+                    ${del}
+                `;
+                feed.appendChild(item);
+            });
+        }
+
+        let editingLogId = null;
+
+        function setLogModalMode(editing) {
+            document.getElementById('logModalTitle').innerHTML = editing
+                ? '<i class="fa-solid fa-pen-to-square mr-1"></i> GÜNLÜK KAYDINI DÜZENLE'
+                : '<i class="fa-solid fa-pen-to-square mr-1"></i> YENİ GÜNLÜK KAYDI';
+            document.getElementById('logSubmitBtn').textContent = editing ? 'Değişiklikleri Kaydet' : 'Günlüğe Ekle';
+        }
+
+        async function openEditLogModal(id) {
+            if (!(await requireAdmin())) return;
+            const log = logs.find(x => x.id === id);
+            if (!log) return;
+            editingLogId = id;
+            document.getElementById('logDate').value = log.date;
+            document.getElementById('logCategory').value = log.category;
+            document.getElementById('logTitle').value = log.title;
+            document.getElementById('logContent').value = log.content;
+            document.getElementById('logPositionRow').classList.add('hidden');
+            setLogModalMode(true);
+            document.getElementById('addLogModal').classList.remove('hidden');
+        }
+
+        async function openAddLogModal() {
+            if (!(await requireAdmin())) return;
+            editingLogId = null;
+            document.getElementById('logForm').reset();
+            setLogModalMode(false);
+            document.getElementById('logPositionRow').classList.remove('hidden');
+            document.getElementById('logDate').valueAsDate = new Date();
+            document.getElementById('addLogModal').classList.remove('hidden');
+        }
+        function closeAddLogModal() {
+            document.getElementById('addLogModal').classList.add('hidden');
+            document.getElementById('logForm').reset();
+            editingLogId = null;
+        }
+
+        async function saveLog(e) {
+            e.preventDefault();
+            try {
+                const editing = editingLogId !== null;
+                const row = await adminRequest(editing ? '/api/logs?id=' + editingLogId : '/api/logs', editing ? 'PUT' : 'POST', {
+                    date: document.getElementById('logDate').value,
+                    category: document.getElementById('logCategory').value,
+                    title: document.getElementById('logTitle').value,
+                    content: document.getElementById('logContent').value
+                });
+                const where = document.getElementById('logPosition').value;
+                if (editing) logs = logs.map(x => x.id === row.id ? row : x);
+                else logs.push(row);
+                renderLogs();
+                if (!editing) placeNewItem('logs', row.id, where);
+                closeAddLogModal();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        async function deleteLog(id) {
+            if (!(await requireAdmin())) return;
+            if (!confirm('Bu günlük kaydı silinsin mi?')) return;
+            try {
+                await adminRequest('/api/logs?id=' + id, 'DELETE');
+                logs = logs.filter(l => l.id !== id);
+                renderLogs();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        // ===== Biyografi & Hikaye — Netlify Database =====
+        const STORY_COLORS = {
+            cyan: { text: 'text-cyber-cyan', border: 'border-cyber-cyan', hover: 'group-hover:bg-cyber-cyan' },
+            crimson: { text: 'text-cyber-crimson', border: 'border-cyber-crimson', hover: 'group-hover:bg-cyber-crimson' },
+            amber: { text: 'text-cyber-amber', border: 'border-cyber-amber', hover: 'group-hover:bg-cyber-amber' },
+            neonGreen: { text: 'text-cyber-neonGreen', border: 'border-cyber-neonGreen', hover: 'group-hover:bg-cyber-neonGreen' }
+        };
+        let storyStages = [];
+        let storyLoaded = false;
+
+        function orderedStory() {
+            return sortByOrder(storyStages, 'story');
+        }
+
+        function renderStory() {
+            const container = document.getElementById('storyDynamic');
+            if (!container) return;
+            if (!storyLoaded) return;
+            if (storyStages.length === 0) {
+                container.innerHTML = '<p class="pl-6 text-xs font-orbitron text-gray-500">Henüz hikaye aşaması yok.</p>';
+                return;
+            }
+            container.innerHTML = orderedStory().map((st, index) => {
+                const c = STORY_COLORS[st.color] || STORY_COLORS.cyan;
+                // Management buttons are only shown in admin mode
+                const del = `<div class="admin-only flex items-center justify-end gap-3 pt-1">
+                        ${itemOrderControls('story', st.id, index)}
+                        <button onclick="openEditStoryModal(${Number(st.id)})" class="text-[11px] text-gray-500 hover:text-cyber-cyan font-orbitron"><i class="fa-solid fa-pen-to-square mr-1"></i> Düzenle</button>
+                        <button onclick="deleteStory(${Number(st.id)})" class="text-[11px] text-gray-500 hover:text-cyber-crimson font-orbitron"><i class="fa-solid fa-trash-can mr-1"></i> Aşamayı Sil</button>
+                    </div>`;
+                return `
+                    <div class="relative pl-6 sm:pl-8 group">
+                        <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-cyber-bg border-2 ${c.border} ${c.hover} transition-colors"></div>
+                        <span class="text-xs font-orbitron ${c.text} font-bold tracking-widest block mb-1">${escapeHtml(st.period)}</span>
+                        <h3 class="text-lg font-bold text-white font-orbitron mb-2">${escapeHtml(st.title)}</h3>
+                        <div class="bg-slate-900/80 p-4 rounded-lg border border-slate-800 text-sm text-gray-300 leading-relaxed space-y-2">${toParagraphs(st.content)}</div>
+                        ${del}
+                    </div>`;
+            }).join('');
+        }
+
+        let editingStoryId = null;
+
+        function setStoryModalMode(editing) {
+            document.getElementById('storyModalTitle').innerHTML = editing
+                ? '<i class="fa-solid fa-pen-to-square mr-1"></i> HİKAYE AŞAMASINI DÜZENLE'
+                : '<i class="fa-solid fa-book-medical mr-1"></i> YENİ HİKAYE AŞAMASI';
+            document.getElementById('storySubmitBtn').textContent = editing ? 'Değişiklikleri Kaydet' : 'Hikayeye Ekle';
+        }
+
+        async function openAddStoryModal() {
+            if (!(await requireAdmin())) return;
+            editingStoryId = null;
+            document.getElementById('storyForm').reset();
+            setStoryModalMode(false);
+            document.getElementById('storyPositionRow').classList.remove('hidden');
+            document.getElementById('storyFormError').classList.add('hidden');
+            document.getElementById('addStoryModal').classList.remove('hidden');
+        }
+
+        async function openEditStoryModal(id) {
+            if (!(await requireAdmin())) return;
+            const st = storyStages.find(x => x.id === id);
+            if (!st) return;
+            editingStoryId = id;
+            document.getElementById('storyPeriod').value = st.period;
+            document.getElementById('storyTitle').value = st.title;
+            document.getElementById('storyContent').value = st.content;
+            document.getElementById('storyColor').value = STORY_COLORS[st.color] ? st.color : 'cyan';
+            setStoryModalMode(true);
+            document.getElementById('storyPositionRow').classList.add('hidden');
+            document.getElementById('storyFormError').classList.add('hidden');
+            document.getElementById('addStoryModal').classList.remove('hidden');
+        }
+
+        function closeAddStoryModal() {
+            document.getElementById('addStoryModal').classList.add('hidden');
+            document.getElementById('storyForm').reset();
+            editingStoryId = null;
+        }
+
+        async function saveStory(e) {
+            e.preventDefault();
+            const errEl = document.getElementById('storyFormError');
+            const btn = document.getElementById('storySubmitBtn');
+            btn.disabled = true;
+            try {
+                const editing = editingStoryId !== null;
+                const row = await adminRequest(editing ? '/api/story?id=' + editingStoryId : '/api/story', editing ? 'PUT' : 'POST', {
+                    period: document.getElementById('storyPeriod').value,
+                    title: document.getElementById('storyTitle').value,
+                    content: document.getElementById('storyContent').value,
+                    color: document.getElementById('storyColor').value
+                });
+                const where = document.getElementById('storyPosition').value;
+                if (editing) {
+                    storyStages = storyStages.map(x => x.id === row.id ? row : x);
+                } else {
+                    storyStages.push(row);
+                }
+                renderStory();
+                if (!editing) placeNewItem('story', row.id, where);
+                closeAddStoryModal();
+            } catch (err) {
+                errEl.textContent = err.message;
+                errEl.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteStory(id) {
+            if (!(await requireAdmin())) return;
+            if (!confirm('Bu hikaye aşaması silinsin mi?')) return;
+            try {
+                await adminRequest('/api/story?id=' + id, 'DELETE');
+                storyStages = storyStages.filter(s => s.id !== id);
+                renderStory();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        // ===== Profil Fotoğrafı — Netlify Blobs =====
+        const AVATAR_DEFAULT = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop';
+        const AVATAR_PLACEHOLDER = 'https://placehold.co/300x400/0f172a/00f3ff?text=DANIEL+BROWN';
+        let hasCustomAvatar = false;
+
+        function avatarFallback(img) {
+            if (img.src.includes('/api/avatar')) {
+                hasCustomAvatar = false;
+                img.src = AVATAR_DEFAULT;
+            } else if (img.src !== AVATAR_PLACEHOLDER) {
+                img.onerror = null;
+                img.src = AVATAR_PLACEHOLDER;
+            }
+            updateAvatarControls();
+        }
+
+        function updateAvatarControls() {
+            const resetBtn = document.getElementById('avatarResetBtn');
+            if (resetBtn) resetBtn.classList.toggle('hidden', !(isAdmin() && hasCustomAvatar));
+        }
+
+        async function changeAvatar() {
+            if (!(await requireAdmin())) return;
+            document.getElementById('avatarFileInput').click();
+        }
+
+        // Shrinks large photos in the browser so uploads stay small and fast
+        function resizeImage(file, maxSize = 800) {
+            return new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(file);
+                const img = new Image();
+                img.onload = () => {
+                    const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                    URL.revokeObjectURL(url);
+                    canvas.toBlob(b => b ? resolve(b) : reject(new Error('Görsel işlenemedi.')), 'image/jpeg', 0.88);
+                };
+                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Bu dosya bir görsel olarak açılamadı.')); };
+                img.src = url;
+            });
+        }
+
+        async function uploadAvatar(input) {
+            const file = input.files && input.files[0];
+            input.value = '';
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { alert('Lütfen bir görsel dosyası seçin.'); return; }
+
+            const btn = document.getElementById('avatarChangeBtn');
+            const label = btn.querySelector('span');
+            btn.disabled = true;
+            label.textContent = 'Yükleniyor...';
+            try {
+                // GIFs are sent as-is to keep animation; everything else is resized to JPEG
+                const body = (file.type === 'image/gif' && file.size <= 4 * 1024 * 1024) ? file : await resizeImage(file);
+                let res;
+                try {
+                    res = await fetch('/api/avatar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': body.type, 'x-admin-password': adminPassword },
+                        body
+                    });
+                } catch {
+                    throw new Error('Sunucuya ulaşılamadı.');
+                }
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    if (res.status === 401) logoutAdmin();
+                    throw new Error(data.error || 'Yükleme başarısız.');
+                }
+                const img = document.getElementById('avatarImg');
+                img.onerror = function() { avatarFallback(this); };
+                img.src = '/api/avatar?v=' + Date.now();
+                hasCustomAvatar = true;
+                updateAvatarControls();
+            } catch (err) {
+                alert(err.message);
+            } finally {
+                btn.disabled = false;
+                label.textContent = 'Fotoğrafı Değiştir';
+            }
+        }
+
+        async function resetAvatar() {
+            if (!(await requireAdmin())) return;
+            if (!confirm('Profil fotoğrafı varsayılana döndürülsün mü?')) return;
+            try {
+                await adminRequest('/api/avatar', 'DELETE');
+                hasCustomAvatar = false;
+                document.getElementById('avatarImg').src = AVATAR_DEFAULT;
+                updateAvatarControls();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        // ===== Vatandaşlara Karşı Yaklaşımı — Netlify Database =====
+        // Built-in feelings. Must match BUILTIN_TYPES in lib/attitude-types.ts
+        const BUILTIN_ATTITUDE_TYPES = {
+            'Sinirli':        { icon: 'fa-face-angry',         color: '#ff2a55' },
+            'Aşık':           { icon: 'fa-heart',              color: '#ec4899' },
+            'Hoşlanıyor':     { icon: 'fa-face-smile-beam',    color: '#f472b6' },
+            'Güveniyor':      { icon: 'fa-handshake',          color: '#39ff14' },
+            'Güvenmiyor':     { icon: 'fa-user-slash',         color: '#f97316' },
+            'Nötr':           { icon: 'fa-face-meh',           color: '#94a3b8' },
+            'Saygı Duyuyor':  { icon: 'fa-hands-praying',      color: '#00f3ff' },
+            'Korkuyor':       { icon: 'fa-ghost',              color: '#a855f7' },
+            'Kıskanıyor':     { icon: 'fa-eye',                color: '#eab308' },
+            'Minnettar':      { icon: 'fa-hand-holding-heart', color: '#34d399' },
+            'Şüpheleniyor':   { icon: 'fa-magnifying-glass',   color: '#ffb800' },
+            'Nefret Ediyor':  { icon: 'fa-skull',              color: '#dc2626' },
+            'Koruyucu':       { icon: 'fa-shield-halved',      color: '#3b82f6' },
+            'Borçlu':         { icon: 'fa-sack-dollar',        color: '#d97706' }
+        };
+        // Must match CUSTOM_ICONS in lib/attitude-types.ts
+        const CUSTOM_TYPE_ICONS = {
+            'fa-circle': 'Nokta', 'fa-star': 'Yıldız', 'fa-bolt': 'Şimşek', 'fa-fire': 'Ateş',
+            'fa-heart-crack': 'Kırık Kalp', 'fa-face-grin-tears': 'Gülen Yüz', 'fa-face-sad-tear': 'Üzgün Yüz',
+            'fa-face-surprise': 'Şaşkın Yüz', 'fa-face-grimace': 'Gergin Yüz', 'fa-crown': 'Taç', 'fa-gem': 'Mücevher',
+            'fa-skull-crossbones': 'Tehlike', 'fa-handcuffs': 'Kelepçe', 'fa-gun': 'Silah', 'fa-dollar-sign': 'Para',
+            'fa-car': 'Araba', 'fa-briefcase': 'İş', 'fa-user-secret': 'Gizli', 'fa-thumbs-up': 'Beğeni',
+            'fa-thumbs-down': 'Beğenmeme', 'fa-eye-slash': 'Görmezden Gelme', 'fa-comments': 'Sohbet',
+            'fa-music': 'Müzik', 'fa-flag': 'Bayrak'
+        };
+        // Effect of each built-in feeling on the "attitude toward people" balance bar
+        const BUILTIN_POLARITY = {
+            'Aşık': 'positive', 'Hoşlanıyor': 'positive', 'Güveniyor': 'positive', 'Saygı Duyuyor': 'positive',
+            'Minnettar': 'positive', 'Koruyucu': 'positive',
+            'Sinirli': 'negative', 'Güvenmiyor': 'negative', 'Korkuyor': 'negative', 'Kıskanıyor': 'negative',
+            'Şüpheleniyor': 'negative', 'Nefret Ediyor': 'negative',
+            'Nötr': 'neutral', 'Borçlu': 'neutral'
+        };
+        const POLARITY_LABELS = { positive: 'Olumlu', negative: 'Olumsuz', neutral: 'Nötr' };
+        let customTypes = [];
+        const UNKNOWN_TYPE = { icon: 'fa-circle-question', color: '#64748b' };
+
+        function allTypeNames() {
+            return [...Object.keys(BUILTIN_ATTITUDE_TYPES), ...customTypes.map(t => t.name)];
+        }
+        function typeMeta(name) {
+            if (BUILTIN_ATTITUDE_TYPES[name]) return BUILTIN_ATTITUDE_TYPES[name];
+            const c = customTypes.find(t => t.name === name);
+            return c ? { icon: c.icon, color: c.color } : UNKNOWN_TYPE;
+        }
+        function typePolarity(name) {
+            if (BUILTIN_POLARITY[name]) return BUILTIN_POLARITY[name];
+            const c = customTypes.find(t => t.name === name);
+            return c && POLARITY_LABELS[c.polarity] ? c.polarity : 'neutral';
+        }
+        function polarityMark(name) {
+            const p = typePolarity(name);
+            if (p === 'positive') return '<span class="text-cyber-neonGreen font-bold" title="Olumlu his">+</span>';
+            if (p === 'negative') return '<span class="text-cyber-crimson font-bold" title="Olumsuz his">−</span>';
+            return '<span class="text-gray-500" title="Nötr his">·</span>';
+        }
+        function typeBadge(name) {
+            const m = typeMeta(name);
+            return `<span style="color:${m.color}"><i class="fa-solid ${m.icon} mr-1"></i>${escapeHtml(name)}</span>`;
+        }
+
+        let attitudes = [];
+        let attitudesLoaded = false;
+        let attitudeFilter = 'Tümü';
+        let editingAttitudeId = null;
+
+        function attitudeLevelLabel(v) {
+            if (v >= 80) return 'Çok Yüksek';
+            if (v >= 60) return 'Yüksek';
+            if (v >= 40) return 'Orta';
+            if (v >= 20) return 'Düşük';
+            return 'Çok Düşük';
+        }
+
+        function setAttitudeFilter(f) {
+            attitudeFilter = f;
+            renderAttitudes();
+        }
+
+        function renderAttitudeFilters() {
+            const box = document.getElementById('attitudeFilters');
+            const used = new Set(attitudes.flatMap(a => (a.meters || []).map(m => m.type)));
+            const chips = ['Tümü', ...allTypeNames().filter(t => used.has(t))];
+            if (!chips.includes(attitudeFilter)) attitudeFilter = 'Tümü';
+            box.innerHTML = chips.length <= 1 ? '' : chips.map(t => {
+                const active = t === attitudeFilter;
+                const label = t === 'Tümü' ? 'Tümü' : typeBadge(t);
+                return `<button onclick="setAttitudeFilter(this.dataset.type)" data-type="${escapeHtml(t)}" class="px-2.5 py-1 rounded text-[11px] font-orbitron border ${active ? 'bg-cyber-amber/20 text-cyber-amber border-cyber-amber' : 'bg-slate-800 text-gray-400 border-slate-700 hover:text-white'}">${label}</button>`;
+            }).join('');
+        }
+
+        function orderedAttitudes() {
+            return sortByOrder([...attitudes].sort((a, b) => b.id - a.id), 'attitudes');
+        }
+
+        function renderAttitudes() {
+            const grid = document.getElementById('attitudeGrid');
+            if (!grid || !attitudesLoaded) return;
+            renderPeopleBalance();
+            renderAttitudeFilters();
+            const q = document.getElementById('attitudeSearch').value.toLowerCase();
+            let list = orderedAttitudes().filter(a => a.name.toLowerCase().includes(q) || (a.note || '').toLowerCase().includes(q));
+            const sort = document.getElementById('attitudeSort').value;
+            const canOrder = sort === 'custom' && !q && attitudeFilter === 'Tümü';
+            if (sort === 'az') list.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+            else if (sort === 'oldest') list.sort((a, b) => a.id - b.id);
+            else if (sort === 'newest') list.sort((a, b) => b.id - a.id);
+            document.getElementById('attitudeCount').textContent = `(${attitudes.length})`;
+            if (attitudeFilter !== 'Tümü') {
+                const val = a => (a.meters.find(m => m.type === attitudeFilter) || {}).value ?? -1;
+                list = list.filter(a => val(a) >= 0).sort((a, b) => val(b) - val(a));
+            }
+            if (list.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-6 text-xs font-orbitron">${attitudes.length ? 'Eşleşen karakter yok.' : 'Henüz karakter eklenmedi.'}</p>`;
+                return;
+            }
+            grid.innerHTML = list.map((a, index) => {
+                const meters = [...(a.meters || [])].sort((x, y) => y.value - x.value);
+                let cardPos = 0, cardNeg = 0;
+                meters.forEach(m => {
+                    const p = typePolarity(m.type);
+                    if (p === 'positive') cardPos += Number(m.value) || 0;
+                    if (p === 'negative') cardNeg += Number(m.value) || 0;
+                });
+                const cardScore = cardPos + cardNeg ? Math.round(((cardPos - cardNeg) / (cardPos + cardNeg)) * 100) : 0;
+                const cardTone = balanceText(cardScore);
+                const top = meters[0];
+                const topMeta = top ? typeMeta(top.type) : BUILTIN_ATTITUDE_TYPES['Nötr'];
+                const bars = meters.map(m => {
+                    const meta = typeMeta(m.type);
+                    const v = Math.max(0, Math.min(100, Number(m.value) || 0));
+                    return `
+                        <div>
+                            <div class="flex justify-between text-[11px] mb-0.5">
+                                <span class="font-semibold">${typeBadge(m.type)}</span>
+                                <span class="font-orbitron text-gray-300">%${v} <span class="text-gray-500">· ${attitudeLevelLabel(v)}</span></span>
+                            </div>
+                            <div class="h-2 rounded-full bg-slate-800 overflow-hidden" role="progressbar" aria-label="${escapeHtml(m.type)}" aria-valuenow="${v}" aria-valuemin="0" aria-valuemax="100">
+                                <div class="h-full rounded-full transition-all duration-500" style="width:${v}%; background:${meta.color}; box-shadow:0 0 8px ${meta.color}80"></div>
+                            </div>
+                        </div>`;
+                }).join('');
+                return `
+                    <div class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 p-4 rounded-lg space-y-3 transition-all">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center" style="color:${topMeta.color}"><i class="fa-solid ${topMeta.icon}"></i></div>
+                            <div class="min-w-0 flex-grow">
+                                <h4 class="font-orbitron font-bold text-white text-sm truncate">${escapeHtml(a.name)}</h4>
+                                ${top ? `<span class="text-[10px]" style="color:${topMeta.color}">Baskın duygu: ${escapeHtml(top.type)}</span>` : ''}
+                            </div>
+                            ${cardPos + cardNeg ? `<span class="shrink-0 text-[10px] font-orbitron px-1.5 py-0.5 rounded border border-slate-700 bg-slate-800" style="color:${cardTone.color}" title="Bu karaktere karşı olumlu / olumsuz his dengesi">${signed(cardScore)}</span>` : ''}
+                        </div>
+                        <div class="space-y-2">${bars}</div>
+                        ${a.note ? `<p class="text-[11px] text-gray-400 leading-relaxed border-t border-slate-800 pt-2">${escapeHtml(a.note).replace(/\n/g, '<br>')}</p>` : ''}
+                        <div class="admin-only flex items-center justify-end gap-3 pt-1 border-t border-slate-800">
+                            ${canOrder ? itemOrderControls('attitudes', a.id, index) : ''}
+                            <button onclick="openAttitudeModal(${Number(a.id)})" class="text-[11px] text-gray-500 hover:text-cyber-cyan font-orbitron"><i class="fa-solid fa-pen-to-square mr-1"></i> Düzenle</button>
+                            <button onclick="deleteAttitude(${Number(a.id)})" class="text-[11px] text-gray-500 hover:text-cyber-crimson font-orbitron"><i class="fa-solid fa-trash-can mr-1"></i> Sil</button>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function addMeterRow(type, value = 50) {
+            const rows = document.getElementById('meterRows');
+            const used = [...rows.querySelectorAll('select')].map(s => s.value);
+            const all = allTypeNames();
+            if (type && !all.includes(type)) all.push(type); // feeling was deleted but is still on this card
+            type = type || all.find(t => !used.includes(t));
+            if (!type) return;
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-2 bg-slate-900/70 border border-slate-800 rounded p-2';
+            row.innerHTML = `
+                <select class="meter-type bg-slate-900 border border-slate-700 rounded p-1.5 text-white text-xs focus:outline-none focus:border-cyber-amber w-36">
+                    ${all.map(t => `<option value="${escapeHtml(t)}" ${t === type ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('')}
+                </select>
+                <input type="range" min="0" max="100" step="5" value="${value}" class="meter-value flex-grow accent-amber-400">
+                <span class="meter-label font-orbitron text-cyber-amber w-10 text-right">%${value}</span>
+                <button type="button" class="text-gray-500 hover:text-cyber-crimson px-1" title="Kaldır"><i class="fa-solid fa-xmark"></i></button>`;
+            const range = row.querySelector('.meter-value');
+            range.addEventListener('input', () => { row.querySelector('.meter-label').textContent = '%' + range.value; });
+            row.querySelector('button').addEventListener('click', () => row.remove());
+            rows.appendChild(row);
+        }
+
+        function fillAttitudeContactPick() {
+            const sel = document.getElementById('attitudeContactPick');
+            const opt = c => {
+                const has = attitudes.some(a => a.name.trim().toLowerCase() === c.name.trim().toLowerCase());
+                return `<option value="${Number(c.id)}">${escapeHtml(c.name)} · ${escapeHtml(c.status)}${has ? ' (zaten ekli)' : ''}</option>`;
+            };
+            const ls = contacts.filter(c => c.section !== 'mexico');
+            const mx = contacts.filter(c => c.section === 'mexico');
+            sel.innerHTML = `<option value="">${contacts.length ? '— Rehberden bir kişi seçin —' : '— Rehberde kişi yok —'}</option>`
+                + (ls.length ? `<optgroup label="Los Santos Rehberi">${ls.map(opt).join('')}</optgroup>` : '')
+                + (mx.length ? `<optgroup label="Meksika'daki Yakınları">${mx.map(opt).join('')}</optgroup>` : '');
+        }
+
+        function pickAttitudeContact(sel) {
+            const c = contacts.find(x => x.id === Number(sel.value));
+            if (!c) return;
+            // If this person already has an attitude card, switch to editing it instead of creating a duplicate
+            const existing = attitudes.find(a => a.name.trim().toLowerCase() === c.name.trim().toLowerCase());
+            if (existing && existing.id !== editingAttitudeId) {
+                if (confirm(`${c.name} için zaten bir yaklaşım kartı var. Onu düzenlemek ister misiniz?`)) {
+                    openAttitudeModal(existing.id);
+                    return;
+                }
+            }
+            document.getElementById('attitudeName').value = c.name;
+        }
+
+        // Shortcut from a Rehber card: edit the existing attitude for this person, or start a new one prefilled
+        async function openAttitudeForContact(contactId) {
+            const c = contacts.find(x => x.id === contactId);
+            if (!c) return;
+            const existing = attitudes.find(a => a.name.trim().toLowerCase() === c.name.trim().toLowerCase());
+            if (existing) return openAttitudeModal(existing.id);
+            await openAttitudeModal();
+            if (isAdmin()) document.getElementById('attitudeName').value = c.name;
+        }
+
+        async function openAttitudeModal(id) {
+            if (!(await requireAdmin())) return;
+            const a = id ? attitudes.find(x => x.id === id) : null;
+            editingAttitudeId = a ? a.id : null;
+            document.getElementById('attitudeForm').reset();
+            fillAttitudeContactPick();
+            document.getElementById('meterRows').innerHTML = '';
+            document.getElementById('attitudeError').classList.add('hidden');
+            document.getElementById('attitudeModalTitle').innerHTML = a
+                ? '<i class="fa-solid fa-user-pen mr-1"></i> YAKLAŞIMI DÜZENLE'
+                : '<i class="fa-solid fa-user-plus mr-1"></i> KARAKTER EKLE';
+            document.getElementById('attitudeSubmitBtn').textContent = a ? 'Değişiklikleri Kaydet' : 'Kaydet';
+            document.getElementById('attitudePositionRow').classList.toggle('hidden', !!a);
+            if (a) {
+                document.getElementById('attitudeName').value = a.name;
+                document.getElementById('attitudeNote').value = a.note || '';
+                (a.meters || []).forEach(m => addMeterRow(m.type, m.value));
+            } else {
+                addMeterRow('Nötr', 50);
+            }
+            document.getElementById('attitudeModal').classList.remove('hidden');
+        }
+        function closeAttitudeModal() {
+            document.getElementById('attitudeModal').classList.add('hidden');
+            editingAttitudeId = null;
+        }
+
+        async function saveAttitude(e) {
+            e.preventDefault();
+            const errEl = document.getElementById('attitudeError');
+            const meters = [...document.querySelectorAll('#meterRows > div')].map(r => ({
+                type: r.querySelector('.meter-type').value,
+                value: Number(r.querySelector('.meter-value').value)
+            }));
+            const types = meters.map(m => m.type);
+            if (meters.length === 0) { errEl.textContent = 'En az bir duygu ekleyin.'; errEl.classList.remove('hidden'); return; }
+            if (new Set(types).size !== types.length) { errEl.textContent = 'Aynı duygu iki kez seçilmiş.'; errEl.classList.remove('hidden'); return; }
+            const btn = document.getElementById('attitudeSubmitBtn');
+            btn.disabled = true;
+            try {
+                const editing = editingAttitudeId !== null;
+                const row = await adminRequest(editing ? '/api/attitudes?id=' + editingAttitudeId : '/api/attitudes', editing ? 'PUT' : 'POST', {
+                    name: document.getElementById('attitudeName').value,
+                    note: document.getElementById('attitudeNote').value,
+                    meters
+                });
+                const where = document.getElementById('attitudePosition').value;
+                if (editing) attitudes = attitudes.map(x => x.id === row.id ? row : x);
+                else attitudes.push(row);
+                renderAttitudes();
+                if (!editing) placeNewItem('attitudes', row.id, where);
+                closeAttitudeModal();
+            } catch (err) {
+                errEl.textContent = err.message;
+                errEl.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // ----- Özel duygu türleri -----
+        function refreshMeterSelects() {
+            document.querySelectorAll('#meterRows .meter-type').forEach(sel => {
+                const current = sel.value;
+                const all = allTypeNames();
+                if (!all.includes(current)) all.push(current);
+                sel.innerHTML = all.map(t => `<option value="${escapeHtml(t)}" ${t === current ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('');
+            });
+        }
+
+        function renderTypeManager() {
+            const list = document.getElementById('customTypeList');
+            list.innerHTML = customTypes.length ? customTypes.map(t => {
+                const used = attitudes.filter(a => (a.meters || []).some(m => m.type === t.name)).length;
+                const pol = POLARITY_LABELS[t.polarity] ? t.polarity : 'neutral';
+                return `<span class="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-slate-700 bg-slate-900">
+                        ${typeBadge(t.name)} <span class="text-[10px] text-gray-500">${used} kart</span>
+                        <select onchange="setCustomTypePolarity(${Number(t.id)}, this.value)" title="Genel yaklaşım çubuğuna etkisi" class="bg-slate-800 border border-slate-700 rounded px-1 py-0.5 text-[10px] text-white">
+                            ${Object.entries(POLARITY_LABELS).map(([v, l]) => `<option value="${v}" ${v === pol ? 'selected' : ''}>${l}</option>`).join('')}
+                        </select>
+                        <button onclick="deleteCustomType(${Number(t.id)})" class="text-gray-500 hover:text-cyber-crimson" title="Sil"><i class="fa-solid fa-xmark"></i></button>
+                    </span>`;
+            }).join('') : '<span class="text-gray-500">Henüz özel duygu eklemediniz.</span>';
+            document.getElementById('builtinTypeList').innerHTML = Object.keys(BUILTIN_ATTITUDE_TYPES)
+                .map(t => `<span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-[11px]" title="${POLARITY_LABELS[typePolarity(t)]} his">${polarityMark(t)} ${typeBadge(t)}</span>`).join('');
+        }
+
+        function updateCustomTypePreview() {
+            const name = document.getElementById('customTypeName').value.trim() || 'Yeni Duygu';
+            const color = document.getElementById('customTypeColor').value;
+            const icon = document.getElementById('customTypeIcon').value;
+            document.getElementById('customTypePreview').innerHTML = `<span style="color:${color}"><i class="fa-solid ${icon} mr-1"></i>${escapeHtml(name)}</span>`;
+        }
+
+        async function openTypeManager() {
+            if (!(await requireAdmin())) return;
+            const iconSel = document.getElementById('customTypeIcon');
+            if (!iconSel.options.length) {
+                iconSel.innerHTML = Object.entries(CUSTOM_TYPE_ICONS).map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+                document.getElementById('customTypeName').addEventListener('input', updateCustomTypePreview);
+                document.getElementById('customTypeColor').addEventListener('input', updateCustomTypePreview);
+            }
+            document.getElementById('customTypeError').classList.add('hidden');
+            renderTypeManager();
+            updateCustomTypePreview();
+            document.getElementById('typeManagerModal').classList.remove('hidden');
+        }
+        function closeTypeManager() {
+            document.getElementById('typeManagerModal').classList.add('hidden');
+        }
+
+        async function saveCustomType(e) {
+            e.preventDefault();
+            const errEl = document.getElementById('customTypeError');
+            const btn = document.getElementById('customTypeSaveBtn');
+            btn.disabled = true;
+            try {
+                const row = await adminRequest('/api/attitude-types', 'POST', {
+                    name: document.getElementById('customTypeName').value,
+                    color: document.getElementById('customTypeColor').value,
+                    icon: document.getElementById('customTypeIcon').value,
+                    polarity: document.getElementById('customTypePolarity').value
+                });
+                customTypes.push(row);
+                document.getElementById('customTypeName').value = '';
+                errEl.classList.add('hidden');
+                renderTypeManager();
+                updateCustomTypePreview();
+                refreshMeterSelects();
+                renderAttitudes();
+            } catch (err) {
+                errEl.textContent = err.message;
+                errEl.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function setCustomTypePolarity(id, polarity) {
+            if (!(await requireAdmin())) return;
+            try {
+                const row = await adminRequest('/api/attitude-types?id=' + id, 'PUT', { polarity });
+                customTypes = customTypes.map(x => x.id === row.id ? row : x);
+                renderTypeManager();
+                renderAttitudes();
+            } catch (err) {
+                alert(err.message);
+                renderTypeManager();
+            }
+        }
+
+        async function deleteCustomType(id) {
+            const t = customTypes.find(x => x.id === id);
+            if (!t || !(await requireAdmin())) return;
+            const used = attitudes.filter(a => (a.meters || []).some(m => m.type === t.name)).length;
+            const msg = used
+                ? `"${t.name}" duygusu ${used} kartta kullanılıyor. Silinirse bu kartlarda gri görünür ve kart bir sonraki düzenlemede bu duyguyu kaybeder. Silinsin mi?`
+                : `"${t.name}" duygusu silinsin mi?`;
+            if (!confirm(msg)) return;
+            try {
+                await adminRequest('/api/attitude-types?id=' + id, 'DELETE');
+                customTypes = customTypes.filter(x => x.id !== id);
+                renderTypeManager();
+                renderAttitudes();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        async function deleteAttitude(id) {
+            if (!(await requireAdmin())) return;
+            if (!confirm('Bu karakter listeden silinsin mi?')) return;
+            try {
+                await adminRequest('/api/attitudes?id=' + id, 'DELETE');
+                attitudes = attitudes.filter(a => a.id !== id);
+                renderAttitudes();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        // ===== Sabit Sayfa Metinleri (isim, doğum tarihi, hobiler...) — Netlify Database =====
+        const editDefaults = {};
+        let contentOverrides = {};
+        let editingTextKey = null;
+
+        function initEditableTexts() {
+            document.querySelectorAll('[data-edit]').forEach(el => {
+                editDefaults[el.dataset.edit] = el.textContent.replace(/\s+/g, ' ').trim();
+                el.addEventListener('click', ev => {
+                    if (!isAdmin()) return;
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    openEditTextModal(el.dataset.edit);
+                });
+            });
+        }
+
+        function applyText(key) {
+            const value = contentOverrides[key] ?? editDefaults[key];
+            document.querySelectorAll(`[data-edit="${key}"]`).forEach(el => {
+                el.innerHTML = escapeHtml(value).replace(/\n/g, '<br>');
+            });
+        }
+
+        function openEditTextModal(key) {
+            editingTextKey = key;
+            document.getElementById('editTextValue').value = contentOverrides[key] ?? editDefaults[key];
+            document.getElementById('editTextDefault').textContent = editDefaults[key];
+            document.getElementById('editTextResetBtn').classList.toggle('hidden', !(key in contentOverrides));
+            document.getElementById('editTextModal').classList.remove('hidden');
+            document.getElementById('editTextValue').focus();
+        }
+        function closeEditTextModal() {
+            document.getElementById('editTextModal').classList.add('hidden');
+            editingTextKey = null;
+        }
+
+        async function saveEditText(e) {
+            e.preventDefault();
+            if (!editingTextKey || !(await requireAdmin())) return;
+            const btn = document.getElementById('editTextSaveBtn');
+            btn.disabled = true;
+            try {
+                const row = await adminRequest('/api/content', 'PUT', { key: editingTextKey, value: document.getElementById('editTextValue').value });
+                contentOverrides[row.key] = row.value;
+                applyText(row.key);
+                closeEditTextModal();
+            } catch (err) {
+                alert(err.message);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function resetEditText() {
+            if (!editingTextKey || !(await requireAdmin())) return;
+            const key = editingTextKey;
+            try {
+                await adminRequest('/api/content?key=' + encodeURIComponent(key), 'DELETE');
+                delete contentOverrides[key];
+                applyText(key);
+                closeEditTextModal();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        // ===== Sıralama, legal/illegal seviyesi ve genel tutum — Netlify Database (site_settings) =====
+        let settings = {};
+        let settingsQueue = Promise.resolve();
+
+        // Saves one setting; requests are queued so rapid changes reach the server in order.
+        function saveSetting(key) {
+            settingsQueue = settingsQueue.then(async () => {
+                try {
+                    const row = await adminRequest('/api/settings', 'PUT', { key, value: settings[key] });
+                    settings[key] = row.value;
+                } catch (err) {
+                    alert(err.message);
+                    await reloadSettings();
+                }
+            });
+            return settingsQueue;
+        }
+
+        async function reloadSettings() {
+            try { settings = await loadCollection('/api/settings') || {}; } catch { return; }
+            applyAllStaticOrders();
+            renderSettingsWidgets();
+            renderStory(); renderContacts(); renderLogs(); renderAttitudes();
+        }
+
+        function storedOrder(group) {
+            const o = settings['order:' + group];
+            return Array.isArray(o) ? o : [];
+        }
+
+        // Stable sort: ids saved by the admin come first in their saved order, the rest keep their default order.
+        function sortByOrder(items, group, idOf = x => String(x.id)) {
+            const pos = new Map(storedOrder(group).map((id, i) => [id, i]));
+            return items.map((it, i) => ({ it, i, p: pos.has(idOf(it)) ? pos.get(idOf(it)) : Number.MAX_SAFE_INTEGER }))
+                .sort((a, b) => (a.p - b.p) || (a.i - b.i))
+                .map(x => x.it);
+        }
+
+        function reorderIds(ids, id, action) {
+            const i = ids.indexOf(id);
+            if (i < 0) return null;
+            const next = ids.filter(x => x !== id);
+            let j;
+            if (action === 'top') j = 0;
+            else if (action === 'bottom') j = next.length;
+            else if (action === 'up') j = Math.max(0, i - 1);
+            else if (action === 'down') j = Math.min(next.length, i + 1);
+            else j = Math.min(next.length, Math.max(0, Number(action) - 1));
+            next.splice(j, 0, id);
+            return next.join('|') === ids.join('|') ? null : next;
+        }
+
+        // Database-backed lists: how to read their current order and re-render them
+        const ORDERED_LISTS = {
+            story: { ids: () => orderedStory().map(s => String(s.id)), render: () => renderStory() },
+            'contacts-ls': { ids: () => orderedContacts('los_santos').map(c => String(c.id)), render: () => renderContacts() },
+            'contacts-mx': { ids: () => orderedContacts('mexico').map(c => String(c.id)), render: () => renderContacts() },
+            logs: { ids: () => orderedLogs().map(l => String(l.id)), render: () => renderLogs() },
+            attitudes: { ids: () => orderedAttitudes().map(a => String(a.id)), render: () => renderAttitudes() }
+        };
+
+        function staticIds(group) {
+            const box = document.querySelector(`[data-sort-group="${group}"]`);
+            return box ? [...box.children].filter(el => el.dataset.sortId).map(el => el.dataset.sortId) : [];
+        }
+
+        async function moveItem(group, id, action) {
+            if (!(await requireAdmin())) return;
+            const list = ORDERED_LISTS[group];
+            const ids = list ? list.ids() : staticIds(group);
+            if (action === 'ask') {
+                const answer = prompt(`Yeni sıra numarası (1 - ${ids.length}):`, String(ids.indexOf(String(id)) + 1));
+                if (answer === null) return;
+                const n = parseInt(answer, 10);
+                if (!Number.isInteger(n) || n < 1) { alert('Geçerli bir sıra numarası girin.'); return; }
+                action = n;
+            }
+            const next = reorderIds(ids, String(id), action);
+            if (!next) return;
+            settings['order:' + group] = next;
+            if (list) list.render(); else applyStaticOrder(group);
+            await saveSetting('order:' + group);
+        }
+
+        // Puts a newly created item at the top or bottom of its list
+        async function placeNewItem(group, id, where) {
+            const ids = ORDERED_LISTS[group].ids();
+            const next = reorderIds(ids, String(id), where);
+            if (!next) {
+                // Already in place: still store the full order so later additions keep it stable
+                if (storedOrder(group).length) return;
+                settings['order:' + group] = ids;
+            } else {
+                settings['order:' + group] = next;
+            }
+            ORDERED_LISTS[group].render();
+            await saveSetting('order:' + group);
+        }
+
+        // Controls for one card of a database list (shown in admin mode only)
+        function itemOrderControls(group, id, index) {
+            const b = (action, icon, title) => `<button type="button" data-move-group="${group}" data-move-id="${Number(id)}" data-move-action="${action}" title="${title}"><i class="fa-solid ${icon}"></i></button>`;
+            return `<span class="item-order">
+                    <button type="button" class="sort-pos" data-move-group="${group}" data-move-id="${Number(id)}" data-move-action="ask" title="Sıra numarasını değiştir">#${index + 1}</button>
+                    ${b('top', 'fa-angles-up', 'En başa al')}${b('up', 'fa-arrow-up', 'Bir yukarı')}${b('down', 'fa-arrow-down', 'Bir aşağı')}${b('bottom', 'fa-angles-down', 'En sona al')}
+                </span>`;
+        }
+
+        // Static page blocks: add controls once, then apply the saved order
+        function initStaticSorting() {
+            document.querySelectorAll('[data-sort-group]').forEach(box => {
+                const group = box.dataset.sortGroup;
+                const style = box.dataset.sortStyle || 'card';
+                [...box.children].filter(el => el.dataset.sortId).forEach(el => {
+                    const id = el.dataset.sortId;
+                    const btn = (action, icon, title) => `<button type="button" data-move-group="${group}" data-move-id="${id}" data-move-action="${action}" title="${title}"><i class="fa-solid ${icon}"></i></button>`;
+                    if (style === 'tabs') {
+                        // Wrap the tab button with left / right arrows
+                        const wrap = document.createElement('div');
+                        wrap.className = 'flex items-stretch shrink-0';
+                        wrap.dataset.sortId = id;
+                        el.removeAttribute('data-sort-id');
+                        el.replaceWith(wrap);
+                        wrap.innerHTML = `<button type="button" class="admin-only tab-move" data-move-group="tabs" data-move-id="${id}" data-move-action="up" title="Sola taşı"><i class="fa-solid fa-chevron-left"></i></button>`;
+                        wrap.appendChild(el);
+                        wrap.insertAdjacentHTML('beforeend', `<button type="button" class="admin-only tab-move" data-move-group="tabs" data-move-id="${id}" data-move-action="down" title="Sağa taşı"><i class="fa-solid fa-chevron-right"></i></button>`);
+                        return;
+                    }
+                    if (getComputedStyle(el).position === 'static') el.classList.add('relative');
+                    const ctrl = document.createElement('div');
+                    ctrl.className = 'sort-ctrl admin-only';
+                    ctrl.dataset.style = style;
+                    ctrl.innerHTML = style === 'compact'
+                        ? btn('up', 'fa-caret-up', 'Yukarı taşı') + btn('down', 'fa-caret-down', 'Aşağı taşı')
+                        : `<button type="button" class="sort-pos" data-move-group="${group}" data-move-id="${id}" data-move-action="ask" title="Sıra numarasını değiştir"></button>`
+                          + btn('top', 'fa-angles-up', 'En başa al') + btn('up', 'fa-arrow-up', 'Öne al')
+                          + btn('down', 'fa-arrow-down', 'Geriye al') + btn('bottom', 'fa-angles-down', 'En sona al');
+                    el.appendChild(ctrl);
+                });
+            });
+        }
+
+        function applyStaticOrder(group) {
+            const box = document.querySelector(`[data-sort-group="${group}"]`);
+            if (!box) return;
+            const kids = [...box.children].filter(el => el.dataset.sortId);
+            sortByOrder(kids, group, el => el.dataset.sortId).forEach(el => box.appendChild(el));
+            kids.forEach(el => {
+                const pos = el.querySelector(':scope > .sort-ctrl .sort-pos');
+                if (pos) pos.textContent = '#' + (staticIds(group).indexOf(el.dataset.sortId) + 1);
+            });
+            if (group === 'tabs') renumberTabs();
+        }
+
+        function applyAllStaticOrders() {
+            document.querySelectorAll('[data-sort-group]').forEach(box => applyStaticOrder(box.dataset.sortGroup));
+        }
+
+        function renumberTabs() {
+            document.querySelectorAll('#tabNav .tab-num').forEach((el, i) => { el.textContent = (i + 1) + '.'; });
+        }
+
+        function firstTabId() {
+            const btn = document.querySelector('#tabNav .tab-btn');
+            return btn ? btn.id.replace(/^nav-/, '') : 'tab-summary';
+        }
+
+        // One click handler for every ordering button on the page
+        document.addEventListener('click', ev => {
+            const btn = ev.target.closest('[data-move-group]');
+            if (!btn) return;
+            ev.preventDefault();
+            ev.stopPropagation();
+            const action = btn.dataset.moveAction;
+            moveItem(btn.dataset.moveGroup, btn.dataset.moveId, action);
+        });
+
+        // ----- Legal / İllegal seviyesi -----
+        function legalityLevel() {
+            const v = Number(settings.legality?.value);
+            return Number.isFinite(v) ? Math.min(100, Math.max(0, v)) : 10;
+        }
+        function legalityText(v) {
+            if (v <= 20) return { label: 'Tamamen Legal', color: '#00ff88' };
+            if (v <= 40) return { label: 'Çoğunlukla Legal', color: '#7dff6a' };
+            if (v <= 60) return { label: 'Gri Bölge', color: '#ffb700' };
+            if (v <= 80) return { label: 'Çoğunlukla İllegal', color: '#ff7a3d' };
+            return { label: 'Tamamen İllegal', color: '#ff2a5f' };
+        }
+        function renderLegality(v = legalityLevel()) {
+            const t = legalityText(v);
+            const label = document.getElementById('legalityLabel');
+            label.textContent = `${t.label} · %${v} İLLEGAL`;
+            label.style.color = t.color;
+            document.getElementById('legalityMarker').style.left = v + '%';
+            document.getElementById('legalityMeter').setAttribute('aria-valuenow', String(v));
+            const range = document.getElementById('legalityRange');
+            if (document.activeElement !== range) range.value = v;
+        }
+
+        // ----- İşlediği suçlar -----
+        function crimeList() {
+            return Array.isArray(settings.crimes) ? settings.crimes : [];
+        }
+        function renderCrimes() {
+            const list = crimeList();
+            const box = document.getElementById('crimeList');
+            document.getElementById('crimeCount').textContent = list.length ? `${list.reduce((s, c) => s + (Number(c.count) || 1), 0)} KAYIT` : '';
+            box.innerHTML = list.length ? list.map((c, i) => `
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-cyber-crimson/40 bg-cyber-crimson/10 text-[11px] text-red-200">
+                    ${escapeHtml(c.name)}${Number(c.count) > 1 ? ` <span class="font-orbitron text-cyber-crimson">×${Number(c.count)}</span>` : ''}
+                    <span class="admin-only inline-flex items-center gap-0.5 ml-0.5">
+                        <button type="button" onclick="changeCrime(${i}, -1)" class="text-gray-400 hover:text-white px-0.5" title="Azalt"><i class="fa-solid fa-minus text-[8px]"></i></button>
+                        <button type="button" onclick="changeCrime(${i}, 1)" class="text-gray-400 hover:text-white px-0.5" title="Artır"><i class="fa-solid fa-plus text-[8px]"></i></button>
+                        <button type="button" onclick="moveCrime(${i}, -1)" class="text-gray-400 hover:text-white px-0.5" title="Sola taşı"><i class="fa-solid fa-chevron-left text-[8px]"></i></button>
+                        <button type="button" onclick="moveCrime(${i}, 1)" class="text-gray-400 hover:text-white px-0.5" title="Sağa taşı"><i class="fa-solid fa-chevron-right text-[8px]"></i></button>
+                        <button type="button" onclick="removeCrime(${i})" class="text-gray-400 hover:text-cyber-crimson px-0.5" title="Sil"><i class="fa-solid fa-xmark text-[9px]"></i></button>
+                    </span>
+                </span>`).join('') : '<span class="text-[11px] text-gray-500">Kayıtlı suç yok.</span>';
+        }
+        async function addCrime(e) {
+            e.preventDefault();
+            if (!(await requireAdmin())) return;
+            const name = document.getElementById('crimeName').value.trim();
+            const count = Math.min(999, Math.max(1, parseInt(document.getElementById('crimeCountInput').value, 10) || 1));
+            if (!name) return;
+            settings.crimes = [...crimeList(), { name, count }];
+            document.getElementById('crimeName').value = '';
+            document.getElementById('crimeCountInput').value = 1;
+            renderCrimes();
+            await saveSetting('crimes');
+        }
+        async function changeCrime(i, delta) {
+            if (!(await requireAdmin())) return;
+            const list = crimeList().map(c => ({ ...c }));
+            if (!list[i]) return;
+            list[i].count = Math.min(999, Math.max(1, (Number(list[i].count) || 1) + delta));
+            settings.crimes = list;
+            renderCrimes();
+            await saveSetting('crimes');
+        }
+        async function moveCrime(i, delta) {
+            if (!(await requireAdmin())) return;
+            const list = [...crimeList()];
+            const j = i + delta;
+            if (!list[i] || j < 0 || j >= list.length) return;
+            [list[i], list[j]] = [list[j], list[i]];
+            settings.crimes = list;
+            renderCrimes();
+            await saveSetting('crimes');
+        }
+        async function removeCrime(i) {
+            if (!(await requireAdmin())) return;
+            const c = crimeList()[i];
+            if (!c || !confirm(`"${c.name}" listeden silinsin mi?`)) return;
+            settings.crimes = crimeList().filter((_, k) => k !== i);
+            renderCrimes();
+            await saveSetting('crimes');
+        }
+
+        // ----- Çevresine / insanlara karşı genel tutum -----
+        function balanceText(v) {
+            if (v <= -60) return { label: 'Çok Olumsuz', color: '#ff2a5f' };
+            if (v <= -20) return { label: 'Olumsuz', color: '#ff7a3d' };
+            if (v < 20) return { label: 'Dengeli', color: '#94a3b8' };
+            if (v < 60) return { label: 'Olumlu', color: '#7dff6a' };
+            return { label: 'Çok Olumlu', color: '#00ff88' };
+        }
+        const signed = v => (v > 0 ? '+' : '') + v;
+
+        function envLevel() {
+            const v = Number(settings.environment?.value);
+            return Number.isFinite(v) ? Math.min(100, Math.max(-100, v)) : 0;
+        }
+        function renderEnvironment(v = envLevel()) {
+            const t = balanceText(v);
+            const label = document.getElementById('envLabel');
+            label.textContent = `${t.label} · ${signed(v)}`;
+            label.style.color = t.color;
+            document.getElementById('envMarker').style.left = ((v + 100) / 2) + '%';
+            const range = document.getElementById('envRange');
+            if (document.activeElement !== range) range.value = v;
+        }
+
+        // Balances every positive feeling against every negative one across all character cards
+        function peopleBalance() {
+            let pos = 0, neg = 0, neu = 0;
+            attitudes.forEach(a => (a.meters || []).forEach(m => {
+                const v = Math.max(0, Math.min(100, Number(m.value) || 0));
+                const p = typePolarity(m.type);
+                if (p === 'positive') pos += v; else if (p === 'negative') neg += v; else neu += v;
+            }));
+            const score = pos + neg ? Math.round(((pos - neg) / (pos + neg)) * 100) : 0;
+            return { pos, neg, neu, score };
+        }
+        function renderPeopleBalance() {
+            const { pos, neg, neu, score } = peopleBalance();
+            const t = balanceText(score);
+            const label = document.getElementById('peopleLabel');
+            label.textContent = pos + neg ? `${t.label} · ${signed(score)}` : 'Veri yok';
+            label.style.color = t.color;
+            document.getElementById('peopleMarker').style.left = ((score + 100) / 2) + '%';
+            const total = pos + neg + neu;
+            const pct = v => total ? Math.round((v / total) * 100) : 0;
+            document.getElementById('peoplePosBar').style.width = pct(pos) + '%';
+            document.getElementById('peopleNeuBar').style.width = pct(neu) + '%';
+            document.getElementById('peopleNegBar').style.width = (total ? 100 - pct(pos) - pct(neu) : 0) + '%';
+            document.getElementById('peopleDetail').innerHTML = pos + neg
+                ? `Karakter kartlarındaki hislerden otomatik hesaplanır: <span class="text-cyber-neonGreen">olumlu %${pct(pos)}</span> · <span class="text-gray-300">nötr %${pct(neu)}</span> · <span class="text-cyber-crimson">olumsuz %${total ? 100 - pct(pos) - pct(neu) : 0}</span>`
+                : 'Karakter kartlarına olumlu veya olumsuz bir his eklendiğinde otomatik hesaplanır.';
+        }
+
+        function renderSettingsWidgets() {
+            renderLegality();
+            renderCrimes();
+            renderEnvironment();
+            renderPeopleBalance();
+        }
+
+        // Sliders: preview while dragging, save when released
+        function bindSettingSlider(id, key, render) {
+            const range = document.getElementById(id);
+            range.addEventListener('input', () => render(Number(range.value)));
+            range.addEventListener('change', async () => {
+                if (!(await requireAdmin())) { render(); return; }
+                settings[key] = { value: Number(range.value) };
+                render();
+                await saveSetting(key);
+            });
+        }
+        bindSettingSlider('legalityRange', 'legality', renderLegality);
+        bindSettingSlider('envRange', 'environment', renderEnvironment);
+
+        // ===== Initialize Data on Load =====
+        async function loadAllData() {
+            const status = document.getElementById('storyDbStatus');
+            const results = await Promise.allSettled([
+                loadCollection('/api/story'),
+                loadCollection('/api/contacts'),
+                loadCollection('/api/logs'),
+                loadCollection('/api/content'),
+                loadCollection('/api/attitudes'),
+                loadCollection('/api/attitude-types'),
+                loadCollection('/api/settings')
+            ]);
+            if (results[6].status === 'fulfilled') settings = results[6].value || {};
+            applyAllStaticOrders();
+            renderSettingsWidgets();
+            if (!location.hash) switchTab(firstTabId());
+            if (results[5].status === 'fulfilled') customTypes = results[5].value;
+            if (results[4].status === 'fulfilled') attitudes = results[4].value;
+            attitudesLoaded = true;
+            if (results[3].status === 'fulfilled') {
+                contentOverrides = results[3].value || {};
+                Object.keys(contentOverrides).forEach(k => { if (k in editDefaults) applyText(k); });
+            }
+            if (results[0].status === 'fulfilled') storyStages = results[0].value;
+            storyLoaded = true;
+            if (results[1].status === 'fulfilled') contacts = results[1].value;
+            if (results[2].status === 'fulfilled') logs = results[2].value;
+            const ok = results.every(r => r.status === 'fulfilled');
+            status.textContent = ok ? 'CLOUD DB CONNECTED' : 'DB CONNECTION ERROR';
+            status.classList.toggle('text-cyber-crimson', !ok);
+            updateAdminUI();
+        }
+
+        document.getElementById('avatarImg').addEventListener('load', function() {
+            if (this.src.includes('/api/avatar')) { hasCustomAvatar = true; updateAvatarControls(); }
+        });
+
+        initEditableTexts();
+        initStaticSorting();
+        applyAllStaticOrders();
+        renderSettingsWidgets();
+
+        // Direct link to the attitudes page: /#yaklasimlar
+        const TAB_HASHES = { 'yaklasimlar': 'tab-attitudes', 'biyografi': 'tab-bio', 'rehber': 'tab-contacts', 'gunluk': 'tab-logs', 'beceriler': 'tab-skills' };
+        function openTabFromHash() {
+            const tab = TAB_HASHES[location.hash.slice(1)];
+            if (tab) switchTab(tab);
+        }
+        window.addEventListener('hashchange', openTabFromHash);
+
+        window.onload = function() {
+            openTabFromHash();
+            const avatarImg = document.getElementById('avatarImg');
+            if (avatarImg.complete && avatarImg.naturalWidth && avatarImg.src.includes('/api/avatar')) hasCustomAvatar = true;
+            updateAdminUI();
+            loadAllData();
+        };
+    </script>
+</body>
+</html>

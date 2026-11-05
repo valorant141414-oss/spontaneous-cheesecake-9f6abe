@@ -1,0 +1,1 @@
+ALTER TABLE "contacts" ADD COLUMN "section" text DEFAULT 'los_santos' NOT NULL;
